@@ -3,7 +3,12 @@ import ContactSection from '@/components/Global/contactUs'
 import HeroSection from '@/components/Global/hero'
 import MeetingSection from '@/components/Home/contactBar'
 import PracticesSectorsSection from '@/components/Home/practices'
-
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "About Us",
+  description:
+    "Learn more about IBLaw, our values, our experience, and our commitment to delivering trusted legal solutions.",
+};
 function page() {
   return (
     <>

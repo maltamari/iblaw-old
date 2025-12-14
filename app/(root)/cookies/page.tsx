@@ -1,5 +1,10 @@
 import HeroSection from '@/components/Global/hero'
-
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Cookie Policy",
+  description:
+    "Read IBLaw’s cookie policy and learn how we use cookies to improve user experience and website performance.",
+};
 function page() {
   return (
     <> 

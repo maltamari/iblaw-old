@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   description:
     "IBLaw is an international business law firm offering expert legal services across corporate, regulatory, and dispute resolution practices.",
 };
+
 export default function Home() {
   return (
 <>

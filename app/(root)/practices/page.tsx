@@ -3,7 +3,13 @@ import HeroSection from '@/components/Global/hero'
 import MeetingSection from '@/components/Home/contactBar'
 import Header from '@/components/Global/header'
 import PraciticesAndSectors from '@/components/Practices/praciticesandsectors'
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Practices & Sectors",
+  description:
+    "Explore IBLaw’s legal practices and sectors, including corporate governance, compliance, finance, dispute resolution, and more.",
+};
 function page() {
 
   return (

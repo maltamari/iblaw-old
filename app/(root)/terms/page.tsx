@@ -1,5 +1,10 @@
 import HeroSection from '@/components/Global/hero'
-
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description:
+    "Review the terms and conditions governing the use of the IBLaw website and services.",
+};
 function page() {
   return (
     <> 

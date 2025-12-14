@@ -4,7 +4,12 @@ import HeroSection from '@/components/Global/hero'
 import MeetingSection from '@/components/Home/contactBar'
 import Employees from '@/components/Team/employees'
 import React from 'react'
-
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Our Team",
+  description:
+    "Meet the experienced lawyers and legal professionals at IBLaw who are dedicated to serving our clients.",
+};
 function page() {
   return (
     <>

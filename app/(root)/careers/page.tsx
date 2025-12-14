@@ -1,7 +1,12 @@
 import CareersPage from '@/components/careers/career'
 import HeroSection from '@/components/Global/hero'
 import React from 'react'
-
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Careers",
+  description:
+    "Join IBLaw and build your legal career with a leading international business law firm.",
+};
 function page() {
   return (
     <>

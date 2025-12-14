@@ -1,6 +1,12 @@
 import React from 'react';
 import HeroSection from '@/components/Global/hero'
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Disclaimer",
+  description:
+    "Read IBLaw’s legal disclaimer regarding the information provided on this website.",
+};
 function TermsAndConditions() {
   return (
     <>

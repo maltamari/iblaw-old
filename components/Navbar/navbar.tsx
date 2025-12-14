@@ -41,7 +41,9 @@ function Navbar() {
           <div className="hidden lg:flex items-center justify-center">
             {quickLinks.map((link) => {
               const isPractices = link.href === "/practices";
-              const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`)
+              const isActive =
+                    pathname === link.href ||
+                    pathname.startsWith(`${link.href}/`)
               return (
                 <div
                   key={link.name}

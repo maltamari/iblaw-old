@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+
 export const metadata: Metadata = {
   title: {
     default: "IBLaw | International Business Law Firm",
@@ -46,6 +47,7 @@ export const metadata: Metadata = {
     siteName: "IBLaw",
   },
 };
+
 
 export default function RootLayout({
   children,
