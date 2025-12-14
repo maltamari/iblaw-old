@@ -41,6 +41,7 @@ function Navbar() {
           <div className="hidden lg:flex items-center justify-center">
             {quickLinks.map((link) => {
               const isPractices = link.href === "/practices";
+              const isActive = pathname === link.href || pathname.startsWith(`${link.href}/`)
               return (
                 <div
                   key={link.name}
@@ -60,20 +61,20 @@ function Navbar() {
                       }
                     }}
                     className={`font-medium text-md transition-colors flex items-center gap-1 ${
-                      pathname === link.href
+                      isActive
                         ? "text-main"
                         : "text-ctext hover:text-main"
                     }`}
                   >
                     {/* Name + active dot */}
                     <span className="relative py-5 block">
-                      {pathname === link.href ? (
+                      {isActive ? (
                         <h1 className="font-bold">{link.name}</h1>
                       ) : (
                         link.name
                       )}
 
-                      {pathname === link.href && (
+                      {isActive && (
                         <span className="absolute top-12 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-main animate-pulse" />
                       )}
                     </span>
