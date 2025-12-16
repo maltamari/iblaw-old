@@ -3,7 +3,6 @@ import Header from '@/components/Global/header'
 import HeroSection from '@/components/Global/hero'
 import MeetingSection from '@/components/Home/contactBar'
 import Employees from '@/components/Team/employees'
-import React from 'react'
 import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Our Team",

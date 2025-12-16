@@ -78,7 +78,7 @@ const LoginButton = () => {
       <Button
         onClick={handleSignOut}
         disabled={isLoggingOut}
-        className="bg-main text-white"
+        className="bg-main text-white hover:bg-main/50  cursor-pointer "
       >
         {isLoggingOut ? (
           <>
