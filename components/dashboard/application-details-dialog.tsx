@@ -111,13 +111,13 @@ export function ApplicationDetailsDialog({
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button variant="outline" onClick={onClose}>
-              Close
-            </Button>
-            <Button onClick={() => window.location.href = `mailto:${application.email}`}>
+          <div className="flex justify-between gap-2 pt-4 border-t">
+            <Button className="bg-main" onClick={() => window.location.href = `mailto:${application.email}`}>
               <Mail className="mr-2 h-4 w-4" />
               Reply via Email
+            </Button>
+            <Button variant="outline" onClick={onClose}>
+              Close
             </Button>
           </div>
         </div>

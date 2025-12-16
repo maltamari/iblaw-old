@@ -66,8 +66,6 @@ export default async function DashboardPage() {
       icon: Users,
       description: "Total team members",
       href: "/dashboard/team",
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
     },
     {
       title: "Job Applications",
@@ -75,8 +73,6 @@ export default async function DashboardPage() {
       icon: Briefcase,
       description: "Total applications received",
       href: "/dashboard/applications",
-      color: "text-green-600",
-      bgColor: "bg-green-100",
     },
     {
       title: "Contact Messages",
@@ -84,13 +80,11 @@ export default async function DashboardPage() {
       icon: MessageSquare,
       description: "Total contact messages",
       href: "/dashboard/messages",
-      color: "text-purple-600",
-      bgColor: "bg-purple-100",
     },
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto p-6 space-y-8 mb-20 ">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -125,7 +119,7 @@ export default async function DashboardPage() {
                   </p>
                 </div>
                 <div
-                  className={`rounded-full p-3 ${stat.bgColor} ${stat.color}`}
+                  className={`rounded-full p-3 bg-main text-white`}
                 >
                   <Icon className="h-6 w-6" />
                 </div>

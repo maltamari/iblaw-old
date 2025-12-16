@@ -26,35 +26,12 @@ import {
 import { EditTeamMemberDialog } from "./edit-team-member-dialog";
 import { TeamMember } from "@/utils/team-actions";
 
-// ألوان مختلفة لكل category
-const categoryStyles = {
-  partner: {
-    bg: "bg-blue-100",
-    text: "text-blue-800"
-  },
-  associate: {
-    bg: "bg-green-100",
-    text: "text-green-800"
-  },
-  management: {
-    bg: "bg-purple-100",
-    text: "text-purple-800"
-  },
-  trainee: {
-    bg: "bg-orange-100",
-    text: "text-orange-800"
-  },
-};
-
 export function TeamMembersTable({ members }: { members: TeamMember[] }) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editMember, setEditMember] = useState<TeamMember | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // ترتيب الأعضاء أبجدياً حسب الاسم
-  const sortedMembers = [...members].sort((a, b) => 
-    a.name.localeCompare(b.name)
-  );
+  const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -94,52 +71,48 @@ export function TeamMembersTable({ members }: { members: TeamMember[] }) {
                 </TableCell>
               </TableRow>
             ) : (
-              sortedMembers.map((member, index) => {
-                const categoryStyle = categoryStyles[member.category as keyof typeof categoryStyles] || categoryStyles.partner;
-                
-                return (
-                  <TableRow key={member.id}>
-                    <TableCell className="font-medium text-muted-foreground">
-                      {index + 1}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {member.name}
-                      {!member.slug && (
-                        <span className="ml-2 text-xs text-red-600 font-normal">
-                          (No slug - click edit to generate)
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>{member.role}</TableCell>
-                    <TableCell>{member.department}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${categoryStyle.bg} ${categoryStyle.text}`}>
-                        {member.category.charAt(0).toUpperCase() + member.category.slice(1)}
+              sortedMembers.map((member, index) => (
+                <TableRow key={member.id}>
+                  <TableCell className="font-medium text-muted-foreground">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {member.name}
+                    {!member.slug && (
+                      <span className="ml-2 text-xs text-red-600 font-normal">
+                        (No slug - click edit to generate)
                       </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setEditMember(member)}
-                          className="hover:bg-gray-100"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeleteId(member.id)}
-                          className="hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
+                    )}
+                  </TableCell>
+                  <TableCell>{member.role}</TableCell>
+                  <TableCell>{member.department}</TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-[#2f6894] text-white">
+                      {member.category.charAt(0).toUpperCase() + member.category.slice(1)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setEditMember(member)}
+                        className="hover:bg-[#4c7da3] hover:text-white"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setDeleteId(member.id)}
+                        className="hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>

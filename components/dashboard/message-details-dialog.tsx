@@ -87,13 +87,13 @@ export function MessageDetailsDialog({
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <div className="flex justify-between w-full gap-2 pt-4 border-t">
+            <Button className="bg-main" onClick={() => window.location.href = `mailto:${message.email}?subject=Re: ${message.subject}`}>
+              <Mail className="mr-2 h-4 w-4 " />
+              Reply via Email
+            </Button>
             <Button variant="outline" onClick={onClose}>
               Close
-            </Button>
-            <Button onClick={() => window.location.href = `mailto:${message.email}?subject=Re: ${message.subject}`}>
-              <Mail className="mr-2 h-4 w-4" />
-              Reply via Email
             </Button>
           </div>
         </div>

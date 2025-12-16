@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Eye, Download, Trash2, Search } from "lucide-react";
 import { ApplicationDetailsDialog } from "./application-details-dialog";
 import { DeleteApplicationDialog } from "./delete-application-dialog";
+import { getSignedCVUrl } from "@/utils/application-actions";
+import { toast } from "sonner";
 
 type Application = {
   id: string;
@@ -27,10 +29,17 @@ type Application = {
   created_at: string;
 };
 
-export function ApplicationsTable({ applications }: { applications: Application[] }) {
+export function ApplicationsTable({
+  applications,
+}: {
+  applications: Application[];
+}) {
   const [search, setSearch] = useState("");
-  const [viewApplication, setViewApplication] = useState<Application | null>(null);
+  const [viewApplication, setViewApplication] = useState<Application | null>(
+    null
+  );
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState<string | null>(null);
 
   const filtered = applications.filter((app) =>
     `${app.first_name} ${app.last_name} ${app.email} ${app.position}`
@@ -38,15 +47,31 @@ export function ApplicationsTable({ applications }: { applications: Application[
       .includes(search.toLowerCase())
   );
 
-  const handleDownloadCV = async (cvUrl: string | null) => {
-    if (!cvUrl) return;
-    
-    // Get public URL from Supabase
-    const { createClient } = await import("@/utils/supabase/client");
-    const supabase = createClient();
-    const { data } = supabase.storage.from("cvs").getPublicUrl(cvUrl);
-    
-    window.open(data.publicUrl, "_blank");
+  const handleDownloadCV = async (cvUrl: string | null, applicantName: string) => {
+    if (!cvUrl) {
+      toast.error("No CV available");
+      return;
+    }
+
+    setDownloading(cvUrl);
+
+    try {
+      const result = await getSignedCVUrl(cvUrl);
+
+      if (result.error || !result.data) {
+        toast.error("Failed to download CV");
+        return;
+      }
+
+      // Open in new tab
+      window.open(result.data, "_blank");
+      toast.success("CV opened in new tab");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Failed to download CV");
+    } finally {
+      setDownloading(null);
+    }
   };
 
   return (
@@ -83,8 +108,13 @@ export function ApplicationsTable({ applications }: { applications: Application[
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    {search ? "No matching applications" : "No applications yet"}
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    {search
+                      ? "No matching applications"
+                      : "No applications yet"}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -101,7 +131,9 @@ export function ApplicationsTable({ applications }: { applications: Application[
                     <TableCell>
                       <div className="space-y-1">
                         <p className="text-sm">{app.email}</p>
-                        <p className="text-xs text-muted-foreground">{app.phone}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {app.phone}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -125,10 +157,20 @@ export function ApplicationsTable({ applications }: { applications: Application[
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDownloadCV(app.cv_url)}
+                            onClick={() =>
+                              handleDownloadCV(
+                                app.cv_url,
+                                `${app.first_name} ${app.last_name}`
+                              )
+                            }
                             title="Download CV"
+                            disabled={downloading === app.cv_url}
                           >
-                            <Download className="h-4 w-4" />
+                            <Download
+                              className={`h-4 w-4 ${
+                                downloading === app.cv_url ? "animate-pulse" : ""
+                              }`}
+                            />
                           </Button>
                         )}
                         <Button
@@ -157,7 +199,7 @@ export function ApplicationsTable({ applications }: { applications: Application[
           onClose={() => setViewApplication(null)}
         />
       )}
-      
+
       {deleteId && (
         <DeleteApplicationDialog
           id={deleteId}

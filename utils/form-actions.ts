@@ -10,27 +10,41 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 async function uploadCV(file: File) {
   const supabase = await createClient();
   
+  // Add more logging
+  console.log("📁 File details:", {
+    name: file.name,
+    type: file.type,
+    size: file.size
+  });
+  
   const fileExt = file.name.split('.').pop();
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
   const filePath = `${fileName}`;
 
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-  const { data, error } = await supabase.storage
-    .from('cvs')
-    .upload(filePath, buffer, {
-      contentType: file.type,
-      upsert: false
-    });
+    console.log("📦 Buffer created, size:", buffer.length);
 
-  if (error) {
-    console.error("❌ Upload error:", error);
+    const { data, error } = await supabase.storage
+      .from('cvs')
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (error) {
+      console.error("❌ Upload error:", error);
+      return null;
+    }
+
+    console.log("✅ CV uploaded successfully:", filePath);
+    return filePath;
+  } catch (err) {
+    console.error("❌ Exception during upload:", err);
     return null;
   }
-
-  console.log("✅ CV uploaded successfully:", filePath);
-  return filePath;
 }
 
 async function getCVUrl(filePath: string) {

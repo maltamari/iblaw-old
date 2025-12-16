@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,64 +11,61 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
+import { deleteApplication } from "@/utils/application-actions";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+
+type DeleteApplicationDialogProps = {
+  id: string;
+  open: boolean;
+  onClose: () => void;
+};
 
 export function DeleteApplicationDialog({
   id,
   open,
   onClose,
-}: {
-  id: string;
-  open: boolean;
-  onClose: () => void;
-}) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
+}: DeleteApplicationDialogProps) {
+  const [isPending, startTransition] = useTransition();
 
   const handleDelete = async () => {
-    setIsDeleting(true);
-    
-    try {
-      const { createClient } = await import("@/utils/supabase/client");
-      const supabase = createClient();
-      
-      const { error } = await supabase
-        .from("job_applications")
-        .delete()
-        .eq("id", id);
+    startTransition(async () => {
+      const result = await deleteApplication(id);
 
-      if (error) throw error;
-
-      toast.success("Application deleted successfully");
-      onClose();
-      router.refresh();
-    } catch (error) {
-      console.error("Delete error:", error);
-      toast.error("Failed to delete application");
-    } finally {
-      setIsDeleting(false);
-    }
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Application deleted successfully");
+        onClose();
+      }
+    });
   };
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Application?</AlertDialogTitle>
+          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the job application
-            and all associated data.
+            This action cannot be undone. This will permanently delete the
+            application and associated CV file.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
-            disabled={isDeleting}
+            disabled={isPending}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete"
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
