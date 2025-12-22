@@ -1,3 +1,4 @@
+/// utils/team-actions.ts
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
@@ -23,15 +24,14 @@ export interface TeamMember {
   updated_at: string;
 }
 
-// ✅ دالة لتوليد slug من الاسم
 function generateSlug(name: string): string {
   return name
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '') // إزالة الرموز الخاصة
-    .replace(/\s+/g, '-') // استبدال المسافات بـ -
-    .replace(/-+/g, '-') // إزالة - المتكررة
-    .replace(/^-+|-+$/g, ''); // إزالة - من البداية والنهاية
+    .replace(/[^\w\s-]/g, '') 
+    .replace(/\s+/g, '-') 
+    .replace(/-+/g, '-') 
+    .replace(/^-+|-+$/g, ''); 
 }
 
 // Get all team members
@@ -92,7 +92,6 @@ export async function addTeamMember(formData: FormData) {
   const name = formData.get("name") as string;
   const customSlug = formData.get("slug") as string;
 
-  // ✅ توليد slug تلقائي إذا مش موجود
   const slug = customSlug?.trim() || generateSlug(name);
 
   const data = {

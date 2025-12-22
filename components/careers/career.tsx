@@ -1,14 +1,15 @@
 "use client"
 import { useState } from 'react';
-import { Star, Users, Briefcase, ArrowRight, SendHorizonalIcon } from 'lucide-react';
+import { Star, Users, Briefcase, Send, SendHorizonalIcon } from 'lucide-react';
 import WhyJoin from './whyJoin';
 import Life from './life';
-import Current from './current';
+import Current from './opportunities';
 import Apply from './apply';
 import { Button } from '../ui/button';
 
 const CareersPage = () => {
   const [activeTab, setActiveTab] = useState('why-join');
+  const [preSelectedPosition, setPreSelectedPosition] = useState<string | null>(null);
 
   const tabs = [
     { id: 'why-join', label: 'Why Join IBLAW', icon: Star },
@@ -17,16 +18,38 @@ const CareersPage = () => {
     { id: 'apply', label: 'Apply Now', icon: SendHorizonalIcon }
   ];
 
+  const handleApplyClick = (position: string) => {
+    setPreSelectedPosition(position);
+    setActiveTab('apply');
+    
+    // Smooth scroll to top
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200);
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 w-full">
       {/* Tab Navigation */}
-      <div className="bg-white border-b border-gray-200  top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto  py-14">
+      <nav 
+        role="tablist"
+        className="bg-white border-b border-gray-200 top-0 z-40 shadow-sm"
+        aria-label="Career sections"
+      >
+        <div className="max-w-7xl mx-auto py-14">
           <div className="flex items-center justify-center gap-4 flex-wrap">
             {tabs.map((tab) => (
               <Button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`panel-${tab.id}`}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  if (tab.id !== 'apply') {
+                    setPreSelectedPosition(null);
+                  }
+                }}
                 className={`flex items-center w-70 py-7 rounded-full font-semibold transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-main text-white shadow-lg scale-105'
@@ -39,16 +62,15 @@ const CareersPage = () => {
             ))}
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* Content Sections */}
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <main className="max-w-7xl mx-auto px-6 py-16">
         <WhyJoin activeTab={activeTab} />
         <Life activeTab={activeTab} />
-        <Current activeTab={activeTab} />
-        <Apply activeTab={activeTab} />
-      </div>
-
+        <Current activeTab={activeTab} onApplyClick={handleApplyClick} />
+        <Apply activeTab={activeTab} preSelectedPosition={preSelectedPosition} />
+      </main>
     </div>
   );
 };

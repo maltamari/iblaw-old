@@ -1,20 +1,81 @@
-import React from 'react';
-import { Briefcase, MapPin, Clock, CheckCircle2, ArrowRight, SendHorizonalIcon, LucideSendHorizontal, ArrowRightIcon } from 'lucide-react';
-import { jobListings } from '@/lib/careerData';
-import RightArrow from '../ui/rightArrow';
+'use client';
+
+import React, { useEffect, useState, useMemo } from 'react';
+import { Briefcase, MapPin, Clock, Send, SendHorizonalIcon, ArrowRightIcon } from 'lucide-react';
+import { getJobListings, JobListing } from '@/utils/job-listing-actions';
+import CheckIcon from '../ui/checkIcon';
 import MainButton from '../ui/mainButton';
 import { Button } from '../ui/button';
-import CheckIcon from '../ui/checkIcon';
 
 interface CurrentProps {
   activeTab: string;
+  onApplyClick: (position: string) => void;
 }
 
-const Current = ({ activeTab }: CurrentProps) => {
+// Loading Skeleton Component
+const JobSkeleton = () => (
+  <div className="space-y-6">
+    {[1, 2].map(i => (
+      <div key={i} className="bg-white rounded-3xl p-8 animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-1/3 mb-4" />
+        <div className="h-4 bg-gray-200 rounded w-2/3 mb-4" />
+        <div className="h-4 bg-gray-200 rounded w-1/2" />
+      </div>
+    ))}
+  </div>
+);
+
+const Current = ({ activeTab, onApplyClick }: CurrentProps) => {
+  const [jobListings, setJobListings] = useState<JobListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      setLoading(true);
+      const { data, error } = await getJobListings();
+      
+      if (error) {
+        setError(error);
+      } else {
+        setJobListings(data || []);
+      }
+      setLoading(false);
+    };
+
+    if (activeTab === 'opportunities') {
+      fetchJobs();
+    }
+  }, [activeTab]);
+
+  // Use useMemo for performance
+  const displayedJobs = useMemo(() => jobListings, [jobListings]);
+
   if (activeTab !== 'opportunities') return null;
 
+  if (loading) {
+    return <JobSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600 p-8">
+        <p>Error loading job listings: {error}</p>
+      </div>
+    );
+  }
+
+  if (!displayedJobs || displayedJobs.length === 0) {
+    return (
+      <div className="text-center text-ctext p-8">
+        <p className="text-xl">No current opportunities available at the moment.</p>
+        <p className="mt-2">Please check back later for new openings.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in" role="tabpanel" id="panel-opportunities">
       <h1 className="text-5xl font-bold text-main text-center mb-4">
         Current Opportunities
       </h1>
@@ -25,7 +86,7 @@ const Current = ({ activeTab }: CurrentProps) => {
       </p>
 
       <div className="space-y-6">
-        {jobListings.map((job, index) => (
+        {displayedJobs.map((job, index) => (
           <div
             key={job.id}
             className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 animate-slide-up"
@@ -51,7 +112,7 @@ const Current = ({ activeTab }: CurrentProps) => {
                   </div>
                 </div>
               </div>
-            <Button className="w-15 h-15 hover:scale-110 rounded-full bg-main flex items-center justify-center hover:bg-[#003c6a] transition-all">
+              <Button className="w-15 h-15 hover:scale-110 rounded-full bg-main flex items-center justify-center hover:bg-[#003c6a] transition-all">
               <ArrowRightIcon  className=" text-white scale-170" strokeWidth={2.5} />
             </Button>
             </div>
@@ -65,23 +126,30 @@ const Current = ({ activeTab }: CurrentProps) => {
               </p>
             </div>
 
-            <div>
+            <div className="mb-6">
               <h3 className="text-xl font-bold text-main mb-4">
                 Requirements
               </h3>
               <ul className="space-y-3">
-                {job.requirements.map((req, idx) => (
+                {job.requirements.map((req: string, idx: number) => (
                   <li key={idx} className="flex items-start gap-3">
-                      <CheckIcon/>
+                    <CheckIcon />
                     <span className="text-ctext">{req}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <MainButton text='Apply for this Position' right={SendHorizonalIcon} className='px-10 py-2  mt-10' spanClass=' font-bold'>
+              <MainButton 
+              aria-label={`Apply for ${job.title}`}
+              onClick={() => onApplyClick(job.title)}
+              text='Apply for this Position' 
+              right={SendHorizonalIcon} 
+              className='px-10 py-2 mt-10' 
+              spanClass='font-bold'
+            />
 
-            </MainButton>
+
           </div>
         ))}
       </div>

@@ -1,3 +1,4 @@
+/// app/dashboard/page.tsx
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -35,13 +36,16 @@ export default async function DashboardPage() {
   }
 
   // Get statistics
-  const [teamCount, applicationsCount, messagesCount] = await Promise.all([
+  const [teamCount, applicationsCount, messagesCount,jobListingsCount] = await Promise.all([
     supabase.from("team_members").select("*", { count: "exact", head: true }),
     supabase
       .from("job_applications")
       .select("*", { count: "exact", head: true }),
     supabase
       .from("contact_messages")
+      .select("*", { count: "exact", head: true }),
+      supabase
+      .from("job_listings")
       .select("*", { count: "exact", head: true }),
   ]);
 
@@ -81,7 +85,14 @@ export default async function DashboardPage() {
       description: "Total contact messages",
       href: "/dashboard/messages",
     },
-  ];
+      {
+      title: "Opportunities",
+      value: jobListingsCount.count || 0,
+      icon: FileText,
+      description: "Total Job Listings",
+      href: "/dashboard/opportunities",
+    },
+  ] 
 
   return (
     <div className="container mx-auto p-6 space-y-8 mb-20 ">
@@ -132,32 +143,6 @@ export default async function DashboardPage() {
           );
         })}
       </div>
-
-      {/* Quick Actions */}
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Link href="/dashboard/team">
-            <Button variant="outline" className="w-full justify-start">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Manage Team
-            </Button>
-          </Link>
-          <Link href="/dashboard/applications">
-            <Button variant="outline" className="w-full justify-start">
-              <FileText className="mr-2 h-4 w-4" />
-              View Applications
-            </Button>
-          </Link>
-          <Link href="/dashboard/messages">
-            <Button variant="outline" className="w-full justify-start">
-              <Mail className="mr-2 h-4 w-4" />
-              View Messages
-            </Button>
-          </Link>
-        </div>
-      </div>
-
       {/* Recent Activity */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent Applications */}

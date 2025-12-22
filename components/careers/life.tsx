@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sparkles, Users, Award, Heart, LucideIcon } from 'lucide-react';
+'use client';
+
 import { sections } from '@/lib/careerData';
 import CheckIcon from '../ui/checkIcon';
 
@@ -7,13 +7,11 @@ interface LifeProps {
   activeTab: string;
 }
 
-
-
 const Life = ({ activeTab }: LifeProps) => {
   if (activeTab !== 'life') return null;
 
   return (
-    <div className="animate-fade-in space-y-8">
+    <div className="animate-fade-in space-y-8" role="tabpanel" id="panel-life">
       <div className="text-center mb-12">
         <h1 className="text-5xl font-bold text-main mb-4">Life at IBLAW</h1>
         <div className="w-20 h-1 bg-main mx-auto"></div>

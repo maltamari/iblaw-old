@@ -2,9 +2,11 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { TeamMembersTable } from "@/components/dashboard/team-members-table";
-import { AddTeamMemberDialog } from "@/components/dashboard/add-team-member-dialog";
+import { TeamMembersTable } from "@/components/dashboard/team/team-members-table";
+import { AddTeamMemberDialog } from "@/components/dashboard/team/add-team-member-dialog";
 import { Users } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Team Management - Dashboard",
@@ -36,22 +38,41 @@ export default async function TeamManagementPage() {
   }));
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto p-6 space-y-8 mt-10">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full bg-blue-100 p-3">
-            <Users className="h-6 w-6 text-blue-600" />
+    <div className="flex flex-col md:flex-row items-center gap-6 md:justify-between w-full">
+          {/* Icon and Title Group */}
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+            {/* Icon */}
+            <div className="rounded-full bg-blue-100 p-3">
+              <Users className="h-6 w-6 text-main" />
+            </div>
+            
+            {/* Title and Description */}
+            <div className="text-center md:text-left">
+              <h1 className="text-3xl font-bold mb-2">Team Management</h1>
+              <p className="text-muted-foreground">
+                Manage partners, associates, management, and trainees
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold">Team Management</h1>
-            <p className="text-muted-foreground">
-              Manage partners, associates, management, and trainees
-            </p>
+          
+          {/* Actions Group */}
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            {/* Back Button */}
+            <Link href="/dashboard" className="lg:mr-70">
+              <Button className="flex items-center gap-2 bg-[#195889] hover:bg-[#4c7da3] px-6 py-3 rounded-full transition-all duration-300 hover:-translate-x-1">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="font-medium">Back to Dashboard</span>
+              </Button> 
+            </Link>
+            
+            {/* Add Member Dialog */}
+            <AddTeamMemberDialog /> 
           </div>
         </div>
-        <AddTeamMemberDialog />
-      </div>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
