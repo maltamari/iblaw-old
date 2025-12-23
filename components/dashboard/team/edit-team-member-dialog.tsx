@@ -1,7 +1,7 @@
-// ==================== 📁 components/dashboard/edit-team-member-dialog.tsx (Fixed) ====================
+// ==================== 📁 components/dashboard/team/edit-team-member-dialog.tsx ====================
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,10 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, ExternalLink } from "lucide-react";
+import { Loader2, ExternalLink, Upload, X, FileDown, FileText } from "lucide-react";
 import { TeamMember, TeamCategory, updateTeamMember } from "@/utils/team-actions";
+import { uploadToCloudinary, deleteFromCloudinary, uploadVCardToCloudinary, uploadPDFToCloudinary } from "@/utils/cloudinary-upload";
 import { toast } from "sonner";
 import Link from "next/link";
+import Image from "next/image";
 
 type EditTeamMemberDialogProps = {
   member: TeamMember;
@@ -32,17 +34,162 @@ type EditTeamMemberDialogProps = {
   onClose: () => void;
 };
 
-export function EditTeamMemberDialog({
-  member,
-  open,
-  onClose,
-}: EditTeamMemberDialogProps) {
+export function EditTeamMemberDialog({ member, open, onClose }: EditTeamMemberDialogProps) {
   const [isPending, startTransition] = useTransition();
   const [category, setCategory] = useState<TeamCategory>(member.category);
+  
+  // Photo states
+  const [photoUrl, setPhotoUrl] = useState(member.photo_url || "");
+  const [photoPublicId, setPhotoPublicId] = useState("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  
+  // vCard states
+  const [vcardUrl, setVcardUrl] = useState(member.vcard_url || "");
+  const [vcardPublicId, setVcardPublicId] = useState("");
+  const [isUploadingVcard, setIsUploadingVcard] = useState(false);
+  const vcardInputRef = useRef<HTMLInputElement>(null);
+  
+  // PDF states
+  const [pdfUrl, setPdfUrl] = useState(member.bio_pdf_url || "");
+  const [pdfPublicId, setPdfPublicId] = useState("");
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+
+  // ✅ Handle Photo Upload
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image size should be less than 10MB');
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    toast.loading('Uploading photo...', { id: 'upload-photo' });
+
+    const result = await uploadToCloudinary(file);
+
+    toast.dismiss('upload-photo');
+    setIsUploadingPhoto(false);
+
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      setPhotoUrl(result.url!);
+      setPhotoPublicId(result.publicId!);
+      toast.success('Photo uploaded successfully!');
+    }
+  };
+
+  // ✅ Handle vCard Upload
+  const handleVcardUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.vcf')) {
+      toast.error('Please select a vCard file (.vcf)');
+      return;
+    }
+
+    if (file.size > 1024 * 1024) { // 1MB max for vCard
+      toast.error('vCard file should be less than 1MB');
+      return;
+    }
+
+    setIsUploadingVcard(true);
+    toast.loading('Uploading vCard...', { id: 'upload-vcard' });
+
+    const result = await uploadVCardToCloudinary(file);
+
+    toast.dismiss('upload-vcard');
+    setIsUploadingVcard(false);
+
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      setVcardUrl(result.url!);
+      setVcardPublicId(result.publicId!);
+      toast.success('vCard uploaded successfully!');
+    }
+  };
+
+  // ✅ Handle PDF Upload
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast.error('Please select a PDF file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB max for PDF
+      toast.error('PDF file should be less than 5MB');
+      return;
+    }
+
+    setIsUploadingPdf(true);
+    toast.loading('Uploading PDF...', { id: 'upload-pdf' });
+
+    const result = await uploadPDFToCloudinary(file);
+
+    toast.dismiss('upload-pdf');
+    setIsUploadingPdf(false);
+
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      setPdfUrl(result.url!);
+      setPdfPublicId(result.publicId!);
+      toast.success('PDF uploaded successfully!');
+    }
+  };
+
+  // ✅ Remove handlers
+  const handleRemovePhoto = async () => {
+    if (photoPublicId) {
+      await deleteFromCloudinary(photoPublicId);
+    }
+    setPhotoUrl("");
+    setPhotoPublicId("");
+    if (photoInputRef.current) photoInputRef.current.value = "";
+    toast.success('Photo removed');
+  };
+
+  const handleRemoveVcard = async () => {
+    if (vcardPublicId) {
+      await deleteFromCloudinary(vcardPublicId);
+    }
+    setVcardUrl("");
+    setVcardPublicId("");
+    if (vcardInputRef.current) vcardInputRef.current.value = "";
+    toast.success('vCard removed');
+  };
+
+  const handleRemovePdf = async () => {
+    if (pdfPublicId) {
+      await deleteFromCloudinary(pdfPublicId);
+    }
+    setPdfUrl("");
+    setPdfPublicId("");
+    if (pdfInputRef.current) pdfInputRef.current.value = "";
+    toast.success('PDF removed');
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+
+    if (photoUrl) formData.set('photo_url', photoUrl);
+    if (vcardUrl) formData.set('vcard_url', vcardUrl);
+    if (pdfUrl) formData.set('bio_pdf_url', pdfUrl);
 
     startTransition(async () => {
       const result = await updateTeamMember(member.id, formData);
@@ -56,6 +203,7 @@ export function EditTeamMemberDialog({
     });
   };
 
+  const isAnyUploading = isUploadingPhoto || isUploadingVcard || isUploadingPdf;
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -210,6 +358,179 @@ export function EditTeamMemberDialog({
               </div>
             </div>
 
+            {/* ✅ Files & Media Section with Cloudinary Upload */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase">Files & Media</h3>
+              
+              <div className="grid gap-4">
+                {/* Photo Upload with Preview */}
+                <div className="grid gap-2">
+                  <Label>Profile Photo</Label>
+
+                  {/* Photo Preview */}
+                  {photoUrl && (
+                    <div className="relative w-40 h-40 rounded-lg overflow-hidden border-2 border-gray-200 group">
+                      <Image src={photoUrl} alt="Preview" fill className="object-cover" unoptimized />
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-lg transition-all opacity-0 group-hover:opacity-100"
+                        disabled={isPending || isAnyUploading}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Upload Button */}
+                  <div className="flex gap-2">
+                    <Input
+                      ref={photoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                      disabled={isPending || isAnyUploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => photoInputRef.current?.click()}
+                      disabled={isPending || isAnyUploading}
+                      className="gap-2"
+                    >
+                      {isUploadingPhoto ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4" />
+                          {photoUrl ? "Change Photo" : "Upload Photo"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* Hidden input for form submission */}
+                  <input type="hidden" name="photo_url" value={photoUrl} />
+
+                  <p className="text-xs text-muted-foreground">
+                    Max size: 10MB. Formats: JPG, PNG, WebP. Photo will be optimized automatically.
+                  </p>
+                </div>
+
+                {/* vCard Upload */}
+                <div className="grid gap-2">
+                  <Label>vCard File</Label>
+                  
+                  {vcardUrl && (
+                    <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <FileDown className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm text-blue-700 flex-1">vCard uploaded</span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveVcard}
+                        className="text-red-500 hover:text-red-600"
+                        disabled={isPending || isAnyUploading}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Input
+                      ref={vcardInputRef}
+                      type="file"
+                      accept=".vcf"
+                      onChange={handleVcardUpload}
+                      className="hidden"
+                      disabled={isPending || isAnyUploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => vcardInputRef.current?.click()}
+                      disabled={isPending || isAnyUploading}
+                      className="gap-2"
+                    >
+                      {isUploadingVcard ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <FileDown className="h-4 w-4" />
+                          {vcardUrl ? "Change vCard" : "Upload vCard"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <input type="hidden" name="vcard_url" value={vcardUrl} />
+                  <p className="text-xs text-muted-foreground">
+                    Max 1MB. .vcf file format only.
+                  </p>
+                </div>
+
+                {/* Bio PDF URL */}
+                <div className="grid gap-2">
+                  <Label>Biography PDF</Label>
+                  
+                  {pdfUrl && (
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <FileText className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm text-blue-700 flex-1">PDF uploaded</span>
+                      <button
+                        type="button"
+                        onClick={handleRemovePdf}
+                        className="text-red-500 hover:text-red-600"
+                        disabled={isPending || isAnyUploading}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Input
+                      ref={pdfInputRef}
+                      type="file"
+                      accept=".pdf"
+                      onChange={handlePdfUpload}
+                      className="hidden"
+                      disabled={isPending || isAnyUploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => pdfInputRef.current?.click()}
+                      disabled={isPending || isAnyUploading}
+                      className="gap-2"
+                    >
+                      {isUploadingPdf ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="h-4 w-4" />
+                          {pdfUrl ? "Change PDF" : "Upload PDF"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <input type="hidden" name="bio_pdf_url" value={pdfUrl} />
+                  <p className="text-xs text-muted-foreground">
+                    Max 5MB. PDF format only.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Biography */}
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-gray-500 uppercase">Profile Details</h3>
@@ -266,11 +587,15 @@ export function EditTeamMemberDialog({
               type="button"
               variant="outline"
               onClick={onClose}
-              disabled={isPending}
+              disabled={isPending || isUploadingPhoto}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending} className="bg-main">
+            <Button 
+              type="submit" 
+              disabled={isPending || isUploadingPhoto} 
+              className="bg-main"
+            >
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

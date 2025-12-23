@@ -15,10 +15,10 @@ export const metadata: Metadata = {
 };
 
 const categories = [
-  { key: 'partner', label: 'Partners', color: 'blue' },
-  { key: 'associate', label: 'Associates', color: 'green' },
-  { key: 'management', label: 'Management', color: 'purple' },
-  { key: 'trainee', label: 'Trainees', color: 'orange' },
+  { key: 'partner', label: 'Partners'},
+  { key: 'associate', label: 'Associates' },
+  { key: 'management', label: 'Management' },
+  { key: 'trainee', label: 'Trainees' },
 ] as const;
 
 export default async function TeamManagementPage() {
@@ -76,15 +76,15 @@ export default async function TeamManagementPage() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {groupedMembers.map(({ label, members, color }) => (
+        {groupedMembers.map(({ label, members }) => (
           <div key={label} className="rounded-lg border bg-white p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">{label}</p>
                 <p className="text-2xl font-bold text-main">{members.length}</p>
               </div>
-              <div className={`rounded-full bg-${color}-100 p-2`}>
-                <Users className={`h-5 w-5 text-${color}-600`} />
+              <div className={`rounded-full bg-blue-100 p-2`}>
+                <Users className={`h-5 w-5 text-main`} />
               </div>
             </div>
           </div>

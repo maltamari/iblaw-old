@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { getTeamMembers, TeamMember } from '@/utils/team-actions';
+import Image from 'next/image';
 
 function getInitials(name: string) {
   const parts = name.trim().split(" ");
@@ -133,10 +134,21 @@ const Employees = () => {
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
                       {/* Icon Circle - لون موحد main */}
-                      <div className={`w-24 h-24 rounded-full bg-main flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300 shadow-lg shrink-0`}>
-                        <div className="text-white font-bold text-2xl">
+                      <div className={`w-35 h-35 rounded-full bg-main flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300 shadow-lg shrink-0`}>
+                      {section.photo_url ? (
+                       <Image
+                         src={section.photo_url}
+                         alt={section.name}
+                         width={192}
+                         height={192}
+                        className="w-full h-full rounded-full object-cover"
+                        unoptimized 
+                        />
+                         ) : (
+                         <div className="text-white font-bold text-4xl ">
                           {getInitials(section.name)}
                         </div>
+    )}
                       </div>
 
                       {/* Title */}

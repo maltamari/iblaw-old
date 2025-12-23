@@ -1,7 +1,7 @@
-// ==================== 📁 app/team/[slug]/page.tsx ====================
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone, FileDown, FileText } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Mail, Phone, FileDown, FileText, Contact2Icon, LucideFileUser } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTeamMemberBySlug } from "@/utils/team-actions";
 import type { Metadata } from "next";
@@ -9,6 +9,17 @@ import type { Metadata } from "next";
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+function getGoogleDriveImageUrl(url: string) {
+  if (url.includes('drive.google.com')) {
+    const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    if (fileIdMatch) {
+      const fileId = fileIdMatch[1];
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+  }
+  return url;
+}
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -65,12 +76,15 @@ export default async function TeamMemberPage({ params }: Props) {
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             {/* Avatar */}
-            <div className="w-32 h-32 md:w-48 md:h-48 rounded-full bg-main flex items-center justify-center shadow-xl shrink-0">
+            <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full bg-main flex items-center justify-center shadow-xl shrink-0 overflow-hidden">
               {member.photo_url ? (
-                <img
-                  src={member.photo_url}
+                <Image
+                  src={getGoogleDriveImageUrl(member.photo_url)}
                   alt={member.name}
-                  className="w-full h-full rounded-full object-cover"
+                  width={192}
+                  height={192}
+                  className="w-full h-full object-cover"
+                  unoptimized 
                 />
               ) : (
                 <div className="text-white font-bold text-5xl md:text-7xl">
@@ -95,8 +109,8 @@ export default async function TeamMemberPage({ params }: Props) {
                 <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                   {member.email && (
                     <Link href={`mailto:${member.email}`}>
-                      <Button className="text-main font-bold ">
-                        <Mail className="h-6 w-6 " />
+                      <Button className="text-main font-bold">
+                        <Mail className="h-6 w-6" />
                         {member.email}
                       </Button>
                     </Link>
@@ -112,17 +126,31 @@ export default async function TeamMemberPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Download Buttons - Show only for Partners */}
-              {member.category === 'partner' && (
+              {/* ✅ Download Buttons - Via API Route */}
+              {member.category === 'partner' && (member.vcard_url || member.bio_pdf_url) && (
                 <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                  <Button  className="bg-main rounded-full text-white font-bold w-50  transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-400/20 ">
-                    <FileDown className=" h-4 w-4" />
-                    Download VCard
-                  </Button>
-                  <Button  className="bg-main rounded-full text-white font-bold w-50 transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-400/20">
-                    <FileText className="h-4 w-4" />
-                    Download Bio PDF
-                  </Button>
+                  {member.vcard_url && (
+                    <a 
+                      href={`/api/download?url=${encodeURIComponent(member.vcard_url)}&type=vcard&filename=${encodeURIComponent(member.name.replace(/\s+/g, '-'))}.vcf`}
+                      className="inline-block"
+                    >
+                      <Button className="bg-main rounded-full text-white font-bold w-full sm:w-auto transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-400/20">
+                      <LucideFileUser className="h-4 w-4 " />
+                        Download VCard
+                      </Button>
+                    </a>
+                  )}
+                  {member.bio_pdf_url && (
+                    <a 
+                      href={`/api/download?url=${encodeURIComponent(member.bio_pdf_url)}&type=pdf&filename=${encodeURIComponent(member.name.replace(/\s+/g, '-'))}-Biography.pdf`}
+                      className="inline-block"
+                    >
+                      <Button className="bg-main rounded-full text-white font-bold w-full sm:w-auto transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-400/20">
+                        <FileText className="h-4 w-4 " />
+                        Download Bio PDF
+                      </Button>
+                    </a>
+                  )}
                 </div>
               )}
             </div>

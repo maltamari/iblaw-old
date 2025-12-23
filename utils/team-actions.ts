@@ -22,6 +22,8 @@ export interface TeamMember {
   display_order: number;
   created_at: string;
   updated_at: string;
+    vcard_url?: string;      
+  bio_pdf_url?: string;
 }
 
 function generateSlug(name: string): string {
@@ -91,7 +93,6 @@ export async function addTeamMember(formData: FormData) {
 
   const name = formData.get("name") as string;
   const customSlug = formData.get("slug") as string;
-
   const slug = customSlug?.trim() || generateSlug(name);
 
   const data = {
@@ -103,6 +104,9 @@ export async function addTeamMember(formData: FormData) {
     email: formData.get("email") as string || null,
     phone: formData.get("phone") as string || null,
     biography: formData.get("biography") as string || null,
+    photo_url: formData.get("photo_url") as string || null,      // ✅ موجود
+    vcard_url: formData.get("vcard_url") as string || null,      // ✅ جديد
+    bio_pdf_url: formData.get("bio_pdf_url") as string || null,  // ✅ جديد
     display_order: parseInt(formData.get("display_order") as string) || 0,
   };
 
@@ -128,8 +132,6 @@ export async function updateTeamMember(id: string, formData: FormData) {
 
   const name = formData.get("name") as string;
   const customSlug = formData.get("slug") as string;
-
-  // ✅ توليد slug تلقائي إذا مش موجود
   const slug = customSlug?.trim() || generateSlug(name);
 
   const data: any = {
@@ -141,6 +143,9 @@ export async function updateTeamMember(id: string, formData: FormData) {
     email: formData.get("email") as string || null,
     phone: formData.get("phone") as string || null,
     biography: formData.get("biography") as string || null,
+    photo_url: formData.get("photo_url") as string || null,      // ✅ موجود
+    vcard_url: formData.get("vcard_url") as string || null,      // ✅ جديد
+    bio_pdf_url: formData.get("bio_pdf_url") as string || null,  // ✅ جديد
     display_order: parseInt(formData.get("display_order") as string) || 0,
   };
 
@@ -180,7 +185,6 @@ export async function updateTeamMember(id: string, formData: FormData) {
   
   return { success: true };
 }
-
 // Delete team member
 export async function deleteTeamMember(id: string) {
   const supabase = await createClient();
