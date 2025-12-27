@@ -43,7 +43,11 @@ const Employees = () => {
             .sort((a, b) => a.name.localeCompare(b.name)),
           associates: data
             .filter(m => m.category === 'associate')
-            .sort((a, b) => a.name.localeCompare(b.name)),
+            .sort((a, b) => {if (a.oath_year !== b.oath_year) {
+                return b.oath_year - a.oath_year;
+                    }
+              return a.name.localeCompare(b.name);}
+            ),
           management: data
             .filter(m => m.category === 'management')
             .sort((a, b) => a.name.localeCompare(b.name)),

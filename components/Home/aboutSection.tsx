@@ -30,7 +30,7 @@ export default function AboutSection() {
             </p>
 
             {/* Main Heading */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-main leading-tight">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-main leading-tight capitalize">
               A leading full service law firm
             </h2>
 

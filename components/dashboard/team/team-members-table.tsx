@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import { deleteTeamMember } from "@/utils/team-actions";
+import { deleteTeamMember,TeamMember } from "@/utils/team-actions";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EditTeamMemberDialog } from "./edit-team-member-dialog";
-import { TeamMember } from "@/utils/team-actions";
 
 export function TeamMembersTable({ members }: { members: TeamMember[] }) {
   const [deleteId, setDeleteId] = useState<string | null>(null);

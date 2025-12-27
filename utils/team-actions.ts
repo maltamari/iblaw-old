@@ -11,7 +11,7 @@ export interface TeamMember {
   name: string;
   slug: string;
   role: string;
-  department: string;
+  department?: string;
   category: TeamCategory;
   email?: string;
   phone?: string;
@@ -19,10 +19,10 @@ export interface TeamMember {
   education?: string[];
   practice_areas?: string[];
   photo_url?: string;
-  display_order: number;
+  oath_year: number;
   created_at: string;
   updated_at: string;
-    vcard_url?: string;      
+  vcard_url?: string;      
   bio_pdf_url?: string;
 }
 
@@ -43,7 +43,8 @@ export async function getTeamMembers(category?: string) {
   let query = supabase
     .from("team_members")
     .select("*")
-    .order("name", { ascending: true }); // ترتيب أبجدي
+    .order("oath_year", { ascending: true })  
+    .order("name", { ascending: true });      
 
   if (category) {
     query = query.eq("category", category);
@@ -99,15 +100,15 @@ export async function addTeamMember(formData: FormData) {
     name,
     slug,
     role: formData.get("role") as string,
-    department: formData.get("department") as string,
+    department: formData.get("department") as string || null,
     category: formData.get("category") as string,
     email: formData.get("email") as string || null,
     phone: formData.get("phone") as string || null,
+    oath_year: parseInt(formData.get("oath_year") as string) || 0,
     biography: formData.get("biography") as string || null,
     photo_url: formData.get("photo_url") as string || null,      // ✅ موجود
     vcard_url: formData.get("vcard_url") as string || null,      // ✅ جديد
     bio_pdf_url: formData.get("bio_pdf_url") as string || null,  // ✅ جديد
-    display_order: parseInt(formData.get("display_order") as string) || 0,
   };
 
   if (!data.name || !data.role || !data.department || !data.category) {
@@ -138,15 +139,15 @@ export async function updateTeamMember(id: string, formData: FormData) {
     name,
     slug,
     role: formData.get("role") as string,
-    department: formData.get("department") as string,
+    department: formData.get("department") as string || null,
     category: formData.get("category") as string,
     email: formData.get("email") as string || null,
     phone: formData.get("phone") as string || null,
+    oath_year: parseInt(formData.get("oath_year") as string) || 0,
     biography: formData.get("biography") as string || null,
     photo_url: formData.get("photo_url") as string || null,      // ✅ موجود
     vcard_url: formData.get("vcard_url") as string || null,      // ✅ جديد
     bio_pdf_url: formData.get("bio_pdf_url") as string || null,  // ✅ جديد
-    display_order: parseInt(formData.get("display_order") as string) || 0,
   };
 
   // Handle arrays - education
@@ -165,7 +166,7 @@ export async function updateTeamMember(id: string, formData: FormData) {
     data.practice_areas = [];
   }
 
-  if (!data.name || !data.role || !data.department || !data.category) {
+  if (!data.name || !data.role || !data.category) {
     return { error: "Please fill all required fields" };
   }
 

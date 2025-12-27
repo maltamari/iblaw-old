@@ -90,7 +90,7 @@ export default async function DashboardPage() {
       value: jobListingsCount.count || 0,
       icon: FileText,
       description: "Total Job Listings",
-      href: "/dashboard/opportunities",
+      href: "/dashboard/careers",
     },
   ] 
 

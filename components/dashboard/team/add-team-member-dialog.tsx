@@ -274,10 +274,10 @@ export function AddTeamMemberDialog() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="display_order">Display Order</Label>
+              <Label htmlFor="oath_year">Oath Year</Label>
               <Input
-                id="display_order"
-                name="display_order"
+                id="oath_year"
+                name="oath_year"
                 type="number"
                 placeholder="0"
                 defaultValue="0"

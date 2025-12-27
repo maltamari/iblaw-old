@@ -278,14 +278,12 @@ export function EditTeamMemberDialog({ member, open, onClose }: EditTeamMemberDi
 
               <div className="grid gap-2">
                 <Label htmlFor="edit-department">
-                  Department <span className="text-destructive">*</span>
+                  Department 
                 </Label>
                 <Input
                   id="edit-department"
                   name="department"
-                  defaultValue={member.department}
                   placeholder="Litigation"
-                  required
                   disabled={isPending}
                 />
               </div>
@@ -315,12 +313,12 @@ export function EditTeamMemberDialog({ member, open, onClose }: EditTeamMemberDi
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-display_order">Display Order</Label>
+                  <Label htmlFor="oath_year">Oath Year</Label>
                   <Input
-                    id="edit-display_order"
-                    name="display_order"
+                    id="oath_year"
+                    name="oath_year"
                     type="number"
-                    defaultValue={member.display_order}
+                    defaultValue={member.oath_year}
                     disabled={isPending}
                   />
                 </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Send, SendHorizontalIcon, Upload, X } from 'lucide-react';
+import {  SendHorizontalIcon, Upload, X } from 'lucide-react';
 import { Textarea } from '../ui/textarea';
 import { Input } from '../ui/input';
 import MainButton from '../ui/mainButton';
