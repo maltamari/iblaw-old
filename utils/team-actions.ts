@@ -10,7 +10,7 @@ export interface TeamMember {
   id: string;
   name: string;
   slug: string;
-  role: string;
+  role?: string;
   department?: string;
   category: TeamCategory;
   email?: string;
@@ -99,19 +99,19 @@ export async function addTeamMember(formData: FormData) {
   const data = {
     name,
     slug,
-    role: formData.get("role") as string,
+    role: formData.get("role") as string || null,
     department: formData.get("department") as string || null,
     category: formData.get("category") as string,
     email: formData.get("email") as string || null,
     phone: formData.get("phone") as string || null,
     oath_year: parseInt(formData.get("oath_year") as string) || 0,
     biography: formData.get("biography") as string || null,
-    photo_url: formData.get("photo_url") as string || null,      // ✅ موجود
-    vcard_url: formData.get("vcard_url") as string || null,      // ✅ جديد
-    bio_pdf_url: formData.get("bio_pdf_url") as string || null,  // ✅ جديد
+    photo_url: formData.get("photo_url") as string || null,    
+    vcard_url: formData.get("vcard_url") as string || null,     
+    bio_pdf_url: formData.get("bio_pdf_url") as string || null,  
   };
 
-  if (!data.name || !data.role || !data.department || !data.category) {
+  if (!data.name ||  !data.category) {
     return { error: "Please fill all required fields" };
   }
 
@@ -138,7 +138,7 @@ export async function updateTeamMember(id: string, formData: FormData) {
   const data: any = {
     name,
     slug,
-    role: formData.get("role") as string,
+    role: formData.get("role") as string || null,
     department: formData.get("department") as string || null,
     category: formData.get("category") as string,
     email: formData.get("email") as string || null,
@@ -166,7 +166,7 @@ export async function updateTeamMember(id: string, formData: FormData) {
     data.practice_areas = [];
   }
 
-  if (!data.name || !data.role || !data.category) {
+  if (!data.name  || !data.category) {
     return { error: "Please fill all required fields" };
   }
 

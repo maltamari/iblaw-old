@@ -9,10 +9,9 @@ import {
   MessageSquare,
   FileText,
   ArrowRight,
-  UserPlus,
-  Mail,
+  Settings,
+  Award,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import LoginButton from "@/components/ui/LoginLogoutButton";
 
 export const metadata: Metadata = {
@@ -36,7 +35,7 @@ export default async function DashboardPage() {
   }
 
   // Get statistics
-  const [teamCount, applicationsCount, messagesCount,jobListingsCount] = await Promise.all([
+  const [teamCount, applicationsCount, messagesCount,jobListingsCount,emailSettingsCount,newsAwardsCounts] = await Promise.all([
     supabase.from("team_members").select("*", { count: "exact", head: true }),
     supabase
       .from("job_applications")
@@ -46,6 +45,12 @@ export default async function DashboardPage() {
       .select("*", { count: "exact", head: true }),
       supabase
       .from("job_listings")
+      .select("*", { count: "exact", head: true }),
+       supabase
+      .from("subject_email_mappings")
+      .select("*", { count: "exact", head: true }),
+       supabase
+      .from("news_awards")
       .select("*", { count: "exact", head: true }),
   ]);
 
@@ -91,6 +96,20 @@ export default async function DashboardPage() {
       icon: FileText,
       description: "Total Job Listings",
       href: "/dashboard/careers",
+    },
+      {
+      title: "Email Settings",
+      value: emailSettingsCount.count || 0,
+      icon: Settings,
+      description: "Total Email Categories",
+      href: "/dashboard/email-settings",
+    },
+          {
+      title: "News & Awards",
+      value: newsAwardsCounts.count || 0,
+      icon: Award,
+      description: "Total  News & Awards",
+      href: "/dashboard/news-awards",
     },
   ] 
 

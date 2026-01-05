@@ -1,17 +1,34 @@
-/// utils/form-actions.ts
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
 import { Resend } from "resend";
+import { SUBJECT_OPTIONS } from "@/lib/constants";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// ==================== Get Target Email for Subject ====================
+async function getEmailForSubject(subjectKey: string): Promise<string> {
+  const supabase = await createClient();
+  
+  const { data, error } = await supabase
+    .from('subject_email_mappings')
+    .select('email')
+    .eq('subject_key', subjectKey)
+    .single();
+  
+  if (error || !data) {
+    console.warn(`⚠️ No email mapping found for ${subjectKey}, using default`);
+    return process.env.ADMIN_EMAIL || 'info@iblaw.com';
+  }
+  
+  return data.email;
+}
 
 // ==================== Storage Functions ====================
 
 async function uploadCV(file: File) {
   const supabase = await createClient();
   
-  // Add more logging
   console.log("📁 File details:", {
     name: file.name,
     type: file.type,
@@ -51,17 +68,15 @@ async function uploadCV(file: File) {
 async function getCVUrl(filePath: string) {
   const supabase = await createClient();
   
-  // Try signed URL first
   const { data: signedData, error: signedError } = await supabase.storage
     .from('cvs')
-    .createSignedUrl(filePath, 60 * 60 * 24 * 7); // 7 days
+    .createSignedUrl(filePath, 60 * 60 * 24 * 7);
 
   if (!signedError && signedData?.signedUrl) {
     console.log("✅ Signed URL generated");
     return signedData.signedUrl;
   }
 
-  // Fallback to public URL
   console.log("⚠️ Signed URL failed, using public URL");
   const { data: publicData } = supabase.storage
     .from('cvs')
@@ -77,7 +92,8 @@ async function sendEmails(
   userHtml: string,
   adminSubject: string,
   userSubject: string,
-  userEmail: string
+  userEmail: string,
+  adminEmail: string
 ) {
   const results = {
     adminSent: false,
@@ -85,15 +101,15 @@ async function sendEmails(
     errors: [] as string[]
   };
 
-  // Send to Admin
+  // Send to Admin (or Department Email)
   try {
     const adminResult = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL!,
-      to: process.env.ADMIN_EMAIL!,
+      to: adminEmail,
       subject: adminSubject,
       html: adminHtml,
     });
-    console.log("✅ Admin email sent:", adminResult);
+    console.log("✅ Admin email sent to:", adminEmail);
     results.adminSent = true;
   } catch (error) {
     console.error("❌ Admin email failed:", error);
@@ -124,7 +140,6 @@ export async function submitJobApplication(formData: FormData) {
   const supabase = await createClient();
 
   try {
-    // Extract and validate data
     const data = {
       first_name: formData.get("firstName") as string,
       last_name: formData.get("lastName") as string,
@@ -135,12 +150,10 @@ export async function submitJobApplication(formData: FormData) {
       cv_url: null as string | null,
     };
 
-    // Validation
     if (!data.first_name || !data.last_name || !data.email || !data.phone || !data.position) {
       return { error: "Please fill all required fields" };
     }
 
-    // Handle CV Upload
     let cvUrl = null;
     const cvFile = formData.get("cv") as File;
     
@@ -160,7 +173,6 @@ export async function submitJobApplication(formData: FormData) {
       }
     }
 
-    // Save to Database
     console.log("💾 Saving to database...");
     const { error: dbError } = await supabase
       .from("job_applications")
@@ -173,7 +185,6 @@ export async function submitJobApplication(formData: FormData) {
 
     console.log("✅ Application saved to database");
 
-    // Send Emails
     const adminHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #2563eb; border-bottom: 3px solid #2563eb; padding-bottom: 10px;">
@@ -276,10 +287,10 @@ export async function submitJobApplication(formData: FormData) {
       userHtml,
       `New Job Application: ${data.position}`,
       "Thank you for your application - IBLAW",
-      data.email
+      data.email,
+      process.env.ADMIN_EMAIL!
     );
 
-    // Return success even if emails partially failed
     if (emailResults.errors.length > 0) {
       console.warn("⚠️ Some emails failed:", emailResults.errors);
     }
@@ -303,20 +314,30 @@ export async function submitJobApplication(formData: FormData) {
 export async function submitContactMessage(formData: FormData) {
   const supabase = await createClient();
 
+  const subjectKey = formData.get("subject") as string;
+  
+  // Get subject label from SUBJECT_OPTIONS
+  const subjectOption = SUBJECT_OPTIONS.find(opt => opt.value === subjectKey);
+  const subjectLabel = subjectOption?.label || subjectKey;
+
   const data = {
     first_name: formData.get("firstName") as string,
     last_name: formData.get("lastName") as string,
     email: formData.get("email") as string,
-    subject: formData.get("subject") as string,
+    subject: subjectLabel, // Store the label for display
+    subject_key: subjectKey, // Store the key for filtering
     message: formData.get("message") as string,
   };
 
-  // Validation
   if (!data.first_name || !data.last_name || !data.email || !data.subject || !data.message) {
     return { error: "Please fill all required fields" };
   }
 
   try {
+    // Get the target email for this subject category
+    const targetEmail = await getEmailForSubject(subjectKey);
+    console.log(`📧 Routing to: ${targetEmail} for subject: ${subjectLabel}`);
+
     // Save to Database
     console.log("💾 Saving contact message...");
     const { error: dbError } = await supabase
@@ -350,8 +371,12 @@ export async function submitContactMessage(formData: FormData) {
               </td>
             </tr>
             <tr>
-              <td style="padding: 8px 0; font-weight: bold; color: #475569;">Subject:</td>
-              <td style="padding: 8px 0; color: #1e293b;">${data.subject}</td>
+              <td style="padding: 8px 0; font-weight: bold; color: #475569;">Category:</td>
+              <td style="padding: 8px 0;">
+                <span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 4px; font-weight: 500;">
+                  ${data.subject}
+                </span>
+              </td>
             </tr>
           </table>
         </div>
@@ -399,7 +424,8 @@ export async function submitContactMessage(formData: FormData) {
       userHtml,
       `New Contact Message: ${data.subject}`,
       "Thank you for contacting IBLAW",
-      data.email
+      data.email,
+      targetEmail // Send to the mapped email for this category
     );
 
     if (emailResults.errors.length > 0) {

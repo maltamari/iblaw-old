@@ -1,23 +1,29 @@
-"use client";
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+const smoothScrollToElement = (elementId: string, duration = 1000) => {
+  const element = document.getElementById(elementId);
+  if (!element) return;
 
-export default function ScrollSaver() {
-  const pathname = usePathname();
+  const targetPosition = element.offsetTop;
+  const startPosition = window.scrollY;
+  const distance = targetPosition - startPosition;
+  let startTime: number | null = null;
 
-  useEffect(() => {
-    const handler = () => {
-      sessionStorage.setItem("fromScroll", window.scrollY.toString());
-      sessionStorage.setItem("fromPath", pathname);
-    };
+  const animation = (currentTime: number) => {
+    if (startTime === null) startTime = currentTime;
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
 
-    window.addEventListener("beforeunload", handler);
+    // Easing function
+    const easeInOutCubic = progress < 0.5
+      ? 4 * progress * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-    return () => {
-      handler(); 
-      window.removeEventListener("beforeunload", handler);
-    };
-  }, [pathname]);
+    window.scrollTo(0, startPosition + distance * easeInOutCubic);
 
-  return null;
-}
+    if (progress < 1) {
+      requestAnimationFrame(animation);
+    }
+  };
+
+  requestAnimationFrame(animation);
+};
+export default smoothScrollToElement;

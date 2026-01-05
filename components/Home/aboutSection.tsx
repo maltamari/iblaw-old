@@ -1,4 +1,4 @@
-import {  ArrowRightIcon } from 'lucide-react';
+// components/Home/aboutSection.tsx
 import Image from 'next/image';
 import MainButton from '../ui/mainButton';
 import Link from 'next/link';
@@ -30,12 +30,12 @@ export default function AboutSection() {
             </p>
 
             {/* Main Heading */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-main leading-tight capitalize">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-main leading-tight capitalize px-2">
               A leading full service law firm
             </h2>
 
             {/* Description */}
-            <p className="text-lg text-ctext leading-relaxed">
+            <p className="text-xl md:text-lg text-ctext leading-relaxed w-full px-2 text-justify">
               IBLAW is a leading full-service law firm in the Hashemite Kingdom of Jordan dedicated to providing its clients with unparalleled legal services. Our lawyers consistently strive to deliver excellence in the most complex and demanding legal matters by overcoming and circumventing the legal challenges our clients face. Our lawyers consistently strive to deliver excellence under several industries and legal practices.
             </p>
 

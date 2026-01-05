@@ -1,3 +1,4 @@
+//message-details-dialog.tsx
 "use client";
 
 import {

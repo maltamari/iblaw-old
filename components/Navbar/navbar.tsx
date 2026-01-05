@@ -15,6 +15,7 @@ import { Button } from "../ui/button";
 import MainButton from "../ui/mainButton";
 import PracticesSectorsDropdown from "../Practices/menu";
 import SearchSection from "../Global/search";
+import smoothScrollToElement from "../Global/ScrollSever";
 // import LoginButton from "../ui/LoginLogoutButton";
 
 function Navbar() {
@@ -123,14 +124,12 @@ function Navbar() {
               <SearchSection isOpen={search} onClose={() => setSearch(false)} />
             )}
 
-            {/* Schedule - Desktop only */}
             <Link
-              href="#contact"
+              href="#contact?subject=schedule-meeting"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById("contact")?.scrollIntoView({
-                  behavior: "smooth",
-                });
+                window.history.pushState({}, '', '?subject=schedule-meeting#contact');
+                smoothScrollToElement("contact", 1000); // 1000ms = 1 second
               }}
               className=""
             >
@@ -138,7 +137,6 @@ function Navbar() {
                 text="Schedule A Meeting"
                 left={LucideCalendarRange}
                 className="h-10"
-                
               />
             </Link>
 

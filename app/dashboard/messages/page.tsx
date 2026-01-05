@@ -1,10 +1,11 @@
 /// app/dashboard/messages/page.tsx
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { MessagesTable } from "@/components/dashboard/messages/messages-table";
+import { MessagesTableWithFilter } from "@/components/dashboard/messages/messages-table-with-filter";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/ui/backButton";
 
 export default async function MessagesPage() {
   const supabase = await createClient();
@@ -22,40 +23,56 @@ export default async function MessagesPage() {
     .select("*")
     .order("created_at", { ascending: false });
 
+  // Get subject statistics
+  const messagesBySubject = (messages || []).reduce((acc: Record<string, number>, msg: any) => {
+    const key = msg.subject_key || 'other';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
-    <div className="container mx-auto p-6 space-y-6 mt-10 ">
-            {/* Header */}
-    <div className="flex flex-col md:flex-row items-center gap-6 md:justify-between w-full ">
-          {/* Icon and Title Group */}
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
-            {/* Icon */}
-            <div className="rounded-full bg-blue-100 p-3">
-              <MessageSquare className="h-6 w-6 text-main" />
-            </div>
-            
-            {/* Title and Description */}
-            <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold mb-2">Contact Messages</h1>
-              <p className="text-muted-foreground">
-                View and manage contact form submissions
-              </p>
-            </div>
+    <div className="container mx-auto p-6 space-y-6 mt-10">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row items-center gap-6 md:justify-between w-full">
+        {/* Icon and Title Group */}
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+          {/* Icon */}
+          <div className="rounded-full bg-blue-100 p-3">
+            <MessageSquare className="h-6 w-6 text-main" />
           </div>
           
-          {/* Actions Group */}
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            {/* Back Button */}
-            <Link href="/dashboard" className="">
-              <Button className="flex items-center gap-2 bg-[#195889] hover:bg-[#4c7da3] px-6 py-3 rounded-full transition-all duration-300 hover:-translate-x-1">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                <span className="font-medium">Back to Dashboard</span>
-              </Button> 
-            </Link>
+          {/* Title and Description */}
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl font-bold mb-2">Contact Messages</h1>
+            <p className="text-muted-foreground">
+              View and manage contact form submissions ({messages?.length || 0} total)
+            </p>
           </div>
-    </div>
-      <MessagesTable messages={messages || []} />
+        </div>
+        
+        {/* Actions Group */}
+        <div className="flex flex-col md:flex-row items-center gap-4">
+          {/* Email Settings Button */}
+          <Link href="/dashboard/email-settings">
+            <Button variant="outline" className="flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 hover:-translate-y-1">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span className="font-medium">Email Settings</span>
+            </Button>
+          </Link>
+
+          {/* Back Button */}
+      <BackButton/>
+        </div>
+      </div>
+
+      {/* Messages Table with Filtering */}
+      <MessagesTableWithFilter 
+        messages={messages || []} 
+        subjectStats={messagesBySubject}
+      />
     </div>
   );
 }

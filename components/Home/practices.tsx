@@ -1,6 +1,6 @@
+// components/Home/practices.tsx
 "use client"
 import React, { useState } from 'react';
-import { Award, Building2, Scale, Lightbulb, Home, Users, Globe, Shield, Handshake, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import MainButton from '../ui/mainButton';
 import Link from 'next/link';
@@ -28,7 +28,7 @@ export default function PracticesSection() {
           </div>
 
           {/* Right - Description */}
-          <div className="space-y-6 text-ctext leading-relaxed">
+          <div className="space-y-6 text-ctext leading-relaxed w-full text-justify text-xl">
             <p>
               The firm thrives on a culture of cooperation and shared contribution, ensuring that expertise and experience is shared across departments whenever required for the further benefit of its clients. Furthermore, the firm's ability to draw on its inter-department resources for addressing complex and multifaceted legal requirements gives its leverage efficiency in routine matters in the client's best interest.
             </p>

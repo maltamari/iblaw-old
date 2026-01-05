@@ -100,7 +100,7 @@ export default async function TeamMemberPage({ params }: Props) {
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 mb-4">{member.role}</p>
 
-              <span className="inline-flex items-center rounded-full bg-blue-100 px-4 py-1.5 text-sm font-semibold text-blue-800 uppercase">
+              <span className="inline-flex items-center rounded-full bg-blue-100/70 px-4 py-1.5 text-sm font-semibold text-main uppercase">
                 {categoryLabels[member.category]}
               </span>
 
@@ -130,7 +130,7 @@ export default async function TeamMemberPage({ params }: Props) {
               {member.category === 'partner' && (member.vcard_url || member.bio_pdf_url) && (
                 <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                   {member.vcard_url && (
-                    <a 
+                    <Link 
                       href={`/api/download?url=${encodeURIComponent(member.vcard_url)}&type=vcard&filename=${encodeURIComponent(member.name.replace(/\s+/g, '-'))}.vcf`}
                       className="inline-block"
                     >
@@ -138,7 +138,7 @@ export default async function TeamMemberPage({ params }: Props) {
                       <LucideFileUser className="h-4 w-4 " />
                         Download VCard
                       </Button>
-                    </a>
+                    </Link>
                   )}
                   {member.bio_pdf_url && (
                     <a 

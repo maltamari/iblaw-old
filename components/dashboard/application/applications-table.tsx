@@ -11,7 +11,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, Download, Trash2, Search } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Eye, Download, Trash2, Search, Filter } from "lucide-react";
 import { ApplicationDetailsDialog } from "./application-details-dialog";
 import { DeleteApplicationDialog } from "./delete-application-dialog";
 import { getSignedCVUrl } from "@/utils/application-actions";
@@ -35,17 +43,31 @@ export function ApplicationsTable({
   applications: Application[];
 }) {
   const [search, setSearch] = useState("");
-  const [viewApplication, setViewApplication] = useState<Application | null>(
-    null
-  );
+  const [selectedPosition, setSelectedPosition] = useState<string>("all");
+  const [viewApplication, setViewApplication] = useState<Application | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [downloading, setDownloading] = useState<string | null>(null);
 
-  const filtered = applications.filter((app) =>
-    `${app.first_name} ${app.last_name} ${app.email} ${app.position}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  // Calculate position stats
+  const positionStats = applications.reduce((acc, app) => {
+    if (!acc[app.position]) {
+      acc[app.position] = 0;
+    }
+    acc[app.position]++;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Filter by position first, then by search
+  const filtered = applications
+    .filter((app) => {
+      if (selectedPosition === "all") return true;
+      return app.position === selectedPosition;
+    })
+    .filter((app) =>
+      `${app.first_name} ${app.last_name} ${app.email} ${app.position}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
 
   const handleDownloadCV = async (cvUrl: string | null, applicantName: string) => {
     if (!cvUrl) {
@@ -63,7 +85,6 @@ export function ApplicationsTable({
         return;
       }
 
-      // Open in new tab
       window.open(result.data, "_blank");
       toast.success("CV opened in new tab");
     } catch (error) {
@@ -76,20 +97,69 @@ export function ApplicationsTable({
 
   return (
     <>
-      <div className="space-y-4">
-        {/* Search */}
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search applications..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
+      <div className="space-y-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <Card
+            className={`cursor-pointer hover:shadow-md transition ${
+              selectedPosition === "all" ? "ring-2 ring-[#2f6894]" : ""
+            }`}
+            onClick={() => setSelectedPosition("all")}
+          >
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                All Applications
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{applications.length}</div>
+            </CardContent>
+          </Card>
+
+          {Object.entries(positionStats).map(([position, count]) => (
+            <Card
+              key={position}
+              className={`cursor-pointer hover:shadow-md transition ${
+                selectedPosition === position ? "ring-2 ring-[#2f6894]" : ""
+              }`}
+              onClick={() => setSelectedPosition(position)}
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground line-clamp-2 min-h-10">
+                  {position}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{count}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-4">
+
+
+          {/* Position Filter */}
+          <div className="flex items-center gap-3">
+            <Filter className="h-5 w-5 text-muted-foreground" />
+            <Select value={selectedPosition} onValueChange={setSelectedPosition}>
+              <SelectTrigger className="w-[280px]">
+                <SelectValue placeholder="Filter by position" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Positions</SelectItem>
+                {Object.keys(positionStats).map((position) => (
+                  <SelectItem key={position} value={position}>
+                    {position}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {filtered.length} of {applications.length} applications
+
+          <p className="text-sm text-muted-foreground flex items-center">
+            Showing {filtered.length} of {applications.length}
           </p>
         </div>
 
@@ -112,7 +182,7 @@ export function ApplicationsTable({
                     colSpan={5}
                     className="text-center text-muted-foreground py-8"
                   >
-                    {search
+                    {search || selectedPosition !== "all"
                       ? "No matching applications"
                       : "No applications yet"}
                   </TableCell>

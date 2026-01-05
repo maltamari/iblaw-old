@@ -1,5 +1,4 @@
-import React from 'react';
-import { ArrowLeftIcon, ArrowRight, ArrowRightIcon } from 'lucide-react';
+// components/Home/team.tsx
 import Image from 'next/image';
 import MainButton from '../ui/mainButton';
 import Link from 'next/link';

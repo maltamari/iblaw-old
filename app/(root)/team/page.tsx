@@ -1,3 +1,4 @@
+// app/%28root%29/team/page.tsx
 import ContactSection from '@/components/Global/contactUs'
 import Header from '@/components/Global/header'
 import HeroSection from '@/components/Global/hero'

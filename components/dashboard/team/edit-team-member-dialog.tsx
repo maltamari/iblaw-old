@@ -216,15 +216,7 @@ export function EditTeamMemberDialog({ member, open, onClose }: EditTeamMemberDi
                   Update the team member information. Click save when you're done.
                 </DialogDescription>
               </div>
-              {member.slug && (
-                <Link 
-                  href={`/team/${member.slug}`} 
-                  target="_blank"
-                  className="text-sm text-main hover:underline flex items-center gap-1"
-                >
-                  View Profile <ExternalLink className="h-3 w-3" />
-                </Link>
-              )}
+
             </div>
           </DialogHeader>
 
@@ -264,14 +256,13 @@ export function EditTeamMemberDialog({ member, open, onClose }: EditTeamMemberDi
 
               <div className="grid gap-2">
                 <Label htmlFor="edit-role">
-                  Role <span className="text-destructive">*</span>
+                  Role 
                 </Label>
                 <Input
                   id="edit-role"
                   name="role"
                   defaultValue={member.role}
                   placeholder="Senior Partner"
-                  required
                   disabled={isPending}
                 />
               </div>
@@ -369,14 +360,14 @@ export function EditTeamMemberDialog({ member, open, onClose }: EditTeamMemberDi
                   {photoUrl && (
                     <div className="relative w-40 h-40 rounded-lg overflow-hidden border-2 border-gray-200 group">
                       <Image src={photoUrl} alt="Preview" fill className="object-cover" unoptimized />
-                      <button
+                      <Button
                         type="button"
                         onClick={handleRemovePhoto}
                         className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-lg transition-all opacity-0 group-hover:opacity-100"
                         disabled={isPending || isAnyUploading}
                       >
                         <X className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
                   )}
 

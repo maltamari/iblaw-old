@@ -14,7 +14,7 @@ const CareersPage = () => {
   const tabs = [
     { id: 'why-join', label: 'Why Join IBLAW', icon: Star },
     { id: 'life', label: 'Life at IBLAW', icon: Users },
-    { id: 'opportunities', label: 'Current Opportunities', icon: Briefcase },
+    { id: 'opportunities', label: 'Join Our Team', icon: Briefcase },
     { id: 'apply', label: 'Apply Now', icon: SendHorizonalIcon }
   ];
 
@@ -24,7 +24,7 @@ const CareersPage = () => {
     
     // Smooth scroll to top
     setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top:600 , behavior: 'smooth' });
     }, 200);
   };
 

@@ -1,3 +1,4 @@
+// components/careers/apply.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';

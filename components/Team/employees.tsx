@@ -70,7 +70,7 @@ const Employees = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center px-4 flex justify-center items-center mb-12 animate-fade-in">
           {/* Tab Switcher */}
-          <div className="w-full px-4 lg:px-8 lg:w-170 items-center rounded-3xl lg:rounded-full bg-white p-5 shadow-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="w-full px-4 lg:px-8 lg:w-200 items-center rounded-3xl lg:rounded-full bg-white p-5 shadow-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Button
               onClick={() => setActiveTab('partners')}
               className={`px-10 hover:bg-gray-100 py-7 rounded-full font-semibold transition-all duration-300 ${
@@ -79,7 +79,7 @@ const Employees = () => {
                   : 'text-ctext hover:text-gray-900'
               }`}
             >
-              Partners
+              Partners & Of Counsel
             </Button>
             <Button
               onClick={() => setActiveTab('associates')}

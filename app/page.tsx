@@ -1,3 +1,4 @@
+// app/page.tsx
 import ContactSection from "@/components/Global/contactUs";
 import AboutSection from "@/components/Home/aboutSection";
 import BarSection from "@/components/Home/barSection";

@@ -1,3 +1,4 @@
+// components/Home/contactBar.tsx
 import Image from 'next/image'
 
 function MeetingSection() {

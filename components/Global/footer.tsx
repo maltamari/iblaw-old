@@ -1,4 +1,4 @@
-import { quickLinks, siteLinks } from "@/lib/dataAndLinks";
+import { footerLinks, siteLinks } from "@/lib/dataAndLinks";
 import { MapPin, Mail, Phone, Linkedin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,7 +41,7 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-semibold mb-6">Quick Links</h3>
             <ul className="space-y-3 ">
-              {quickLinks.map((link) => (
+              {footerLinks.map((link) => (
                 <li key={link.name} className="group transition-transform hover:translate-x-1 text-blue-300 hover:text-white">
                   <Link
                     href={link.href}

@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { ExternalLinkIcon, Pencil, Trash2 } from "lucide-react";
 import { deleteTeamMember,TeamMember } from "@/utils/team-actions";
 import { toast } from "sonner";
 import {
@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { EditTeamMemberDialog } from "./edit-team-member-dialog";
+import Link from "next/link";
 
 export function TeamMembersTable({ members }: { members: TeamMember[] }) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -72,11 +73,18 @@ export function TeamMembersTable({ members }: { members: TeamMember[] }) {
             ) : (
               sortedMembers.map((member, index) => (
                 <TableRow key={member.id}>
-                  <TableCell className="font-medium text-muted-foreground">
-                    {index + 1}
+                  <TableCell className=" font-medium text-muted-foreground">
+                      {index + 1}
+
                   </TableCell>
                   <TableCell className="font-medium">
-                    {member.name}
+                    <Link
+                     href={`/team/${member.slug}`} 
+                     target="_blank"
+                     className="hover:text-main py-4"
+                      >
+                     {member.name}
+                    </Link>
                     {!member.slug && (
                       <span className="ml-2 text-xs text-red-600 font-normal">
                         (No slug - click edit to generate)

@@ -1,13 +1,13 @@
+// components/Home/barSection.tsx
 'use client';
 
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 
 function BarSection() {
-  const [showEnglish, setShowEnglish] = useState(false);
+  const [showArabic, setShowEnglish] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  // ✅ حل Hydration Error
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -35,13 +35,13 @@ function BarSection() {
               {/* Quote Text Container with Toggle */}
               <div 
                 className="relative flex-1 cursor-pointer group"
-                onClick={() => mounted && setShowEnglish(!showEnglish)}
+                onClick={() => mounted && setShowEnglish(!showArabic)}
 
               >
                 {/* Arabic Quote */}
                 <div
                   className={`transition-all duration-500 ease-in-out ${
-                    showEnglish ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+                    showArabic ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
                   } absolute inset-0`}
                 >
                   <p
@@ -61,7 +61,7 @@ function BarSection() {
                 {/* English Translation */}
                 <div
                   className={`transition-all duration-500 ease-in-out ml-5 ${
-                    showEnglish ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+                    showArabic ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
                   }`}
                 >
                   <p className="text-[7px] sm:text-sm md:text-xl lg:text-2xl italic font-light leading-relaxed text-white sm:w-full">
@@ -81,7 +81,7 @@ function BarSection() {
                 {mounted && (
                   <div className="absolute bottom-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <span className="text-[6px] sm:text-xs text-white/60">
-                      {showEnglish ? 'العربية ←' : 'English →'}
+                      {showArabic ? 'العربية ←' : 'English →'}
                     </span>
                   </div>
                 )}

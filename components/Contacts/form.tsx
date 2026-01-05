@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,14 +16,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { submitContactMessage } from "@/utils/form-actions";
+import { useSearchParams } from "next/navigation";
+import { SUBJECT_OPTIONS } from "@/lib/constants";
 
 // Form validation schema
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
-  subject: z.string().min(1, "Please enter a subject"),
+  subject: z.string().min(1, "Please select a subject"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
@@ -31,6 +40,7 @@ type FormData = z.infer<typeof formSchema>;
 
 function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const searchParams = useSearchParams();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -43,37 +53,43 @@ function ContactForm() {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
-  setIsSubmitting(true);
-  
-  try {
-    const formData = new FormData();
-    formData.append('firstName', data.firstName);
-    formData.append('lastName', data.lastName);
-    formData.append('email', data.email);
-    formData.append('subject', data.subject);
-    formData.append('message', data.message);
-
-    // استخدم Server Action بدل getform
-    const result = await submitContactMessage(formData);
-    
-    if (result?.error) {
-      toast.error(result.error);
-    } else if (result?.success) {
-      toast.success("Message sent successfully! We'll get back to you soon.");
-      form.reset();
+  // Auto-fill subject from URL parameter
+  useEffect(() => {
+    const subjectParam = searchParams.get("subject");
+    if (subjectParam) {
+      form.setValue("subject", subjectParam);
     }
-  } catch (error) {
-    console.error("Contact form error:", error);
-    toast.error("An unexpected error occurred. Please try again.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  }, [searchParams, form]);
+
+  const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("firstName", data.firstName);
+      formData.append("lastName", data.lastName);
+      formData.append("email", data.email);
+      formData.append("subject", data.subject);
+      formData.append("message", data.message);
+
+      const result = await submitContactMessage(formData);
+
+      if (result?.error) {
+        toast.error(result.error);
+      } else if (result?.success) {
+        toast.success("Message sent successfully! We'll get back to you soon.");
+        form.reset();
+      }
+    } catch (error) {
+      console.error("Contact form error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div>
-      {/* Left Column - Form */}
       <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -156,15 +172,24 @@ function ContactForm() {
                     <FormLabel>
                       Subject <span className="text-main">*</span>
                     </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="text"
-                        placeholder="Select department"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white"
-                        disabled={isSubmitting}
-                      />
-                    </FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={isSubmitting}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
+                          <SelectValue placeholder="Select department" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {SUBJECT_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

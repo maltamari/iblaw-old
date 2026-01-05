@@ -1,3 +1,4 @@
+// components/dashboard/team/add-team-member-dialog.tsx
 "use client";
 
 import { useState, useTransition, useRef } from "react";
@@ -13,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -20,21 +22,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Loader2, Upload, X } from "lucide-react";
-import { addTeamMember } from "@/utils/team-actions";
-import { uploadToCloudinary, deleteFromCloudinary } from "@/utils/cloudinary-upload";
+import { Plus, Loader2, Upload, X, FileDown, FileText } from "lucide-react";
+import { addTeamMember, TeamCategory } from "@/utils/team-actions";
+import { uploadToCloudinary, deleteFromCloudinary, uploadVCardToCloudinary, uploadPDFToCloudinary } from "@/utils/cloudinary-upload";
 import { toast } from "sonner";
 import Image from "next/image";
 
 export function AddTeamMemberDialog() {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [category, setCategory] = useState("partner");
+  const [category, setCategory] = useState<TeamCategory>("partner");
+  
+  // Photo states
   const [photoUrl, setPhotoUrl] = useState("");
   const [photoPublicId, setPhotoPublicId] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  
+  // vCard states
+  const [vcardUrl, setVcardUrl] = useState("");
+  const [vcardPublicId, setVcardPublicId] = useState("");
+  const [isUploadingVcard, setIsUploadingVcard] = useState(false);
+  const vcardInputRef = useRef<HTMLInputElement>(null);
+  
+  // PDF states
+  const [pdfUrl, setPdfUrl] = useState("");
+  const [pdfPublicId, setPdfPublicId] = useState("");
+  const [isUploadingPdf, setIsUploadingPdf] = useState(false);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
 
+  // ✅ Handle Photo Upload
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -49,13 +66,13 @@ export function AddTeamMemberDialog() {
       return;
     }
 
-    setIsUploading(true);
+    setIsUploadingPhoto(true);
     toast.loading('Uploading photo...', { id: 'upload-photo' });
 
     const result = await uploadToCloudinary(file);
 
     toast.dismiss('upload-photo');
-    setIsUploading(false);
+    setIsUploadingPhoto(false);
 
     if (result.error) {
       toast.error(result.error);
@@ -66,27 +83,108 @@ export function AddTeamMemberDialog() {
     }
   };
 
+  // ✅ Handle vCard Upload
+  const handleVcardUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.vcf')) {
+      toast.error('Please select a vCard file (.vcf)');
+      return;
+    }
+
+    if (file.size > 1024 * 1024) { // 1MB max for vCard
+      toast.error('vCard file should be less than 1MB');
+      return;
+    }
+
+    setIsUploadingVcard(true);
+    toast.loading('Uploading vCard...', { id: 'upload-vcard' });
+
+    const result = await uploadVCardToCloudinary(file);
+
+    toast.dismiss('upload-vcard');
+    setIsUploadingVcard(false);
+
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      setVcardUrl(result.url!);
+      setVcardPublicId(result.publicId!);
+      toast.success('vCard uploaded successfully!');
+    }
+  };
+
+  // ✅ Handle PDF Upload
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast.error('Please select a PDF file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB max for PDF
+      toast.error('PDF file should be less than 5MB');
+      return;
+    }
+
+    setIsUploadingPdf(true);
+    toast.loading('Uploading PDF...', { id: 'upload-pdf' });
+
+    const result = await uploadPDFToCloudinary(file);
+
+    toast.dismiss('upload-pdf');
+    setIsUploadingPdf(false);
+
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      setPdfUrl(result.url!);
+      setPdfPublicId(result.publicId!);
+      toast.success('PDF uploaded successfully!');
+    }
+  };
+
+  // ✅ Remove handlers
   const handleRemovePhoto = async () => {
     if (photoPublicId) {
-      toast.loading('Removing photo...', { id: 'remove-photo' });
       await deleteFromCloudinary(photoPublicId);
-      toast.dismiss('remove-photo');
     }
     setPhotoUrl("");
     setPhotoPublicId("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (photoInputRef.current) photoInputRef.current.value = "";
     toast.success('Photo removed');
+  };
+
+  const handleRemoveVcard = async () => {
+    if (vcardPublicId) {
+      await deleteFromCloudinary(vcardPublicId);
+    }
+    setVcardUrl("");
+    setVcardPublicId("");
+    if (vcardInputRef.current) vcardInputRef.current.value = "";
+    toast.success('vCard removed');
+  };
+
+  const handleRemovePdf = async () => {
+    if (pdfPublicId) {
+      await deleteFromCloudinary(pdfPublicId);
+    }
+    setPdfUrl("");
+    setPdfPublicId("");
+    if (pdfInputRef.current) pdfInputRef.current.value = "";
+    toast.success('PDF removed');
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    if (photoUrl) {
-      formData.set('photo_url', photoUrl);
-    }
+    if (photoUrl) formData.set('photo_url', photoUrl);
+    if (vcardUrl) formData.set('vcard_url', vcardUrl);
+    if (pdfUrl) formData.set('bio_pdf_url', pdfUrl);
 
     startTransition(async () => {
       const result = await addTeamMember(formData);
@@ -99,9 +197,16 @@ export function AddTeamMemberDialog() {
         (e.target as HTMLFormElement).reset();
         setPhotoUrl("");
         setPhotoPublicId("");
+        setVcardUrl("");
+        setVcardPublicId("");
+        setPdfUrl("");
+        setPdfPublicId("");
+        setCategory("partner");
       }
     });
   };
+
+  const isAnyUploading = isUploadingPhoto || isUploadingVcard || isUploadingPdf;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -111,7 +216,7 @@ export function AddTeamMemberDialog() {
           Add Team Member
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Add Team Member</DialogTitle>
@@ -120,187 +225,364 @@ export function AddTeamMemberDialog() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">
-                Name <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="John Doe"
-                required
-                disabled={isPending}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="role">
-                Role <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="role"
-                name="role"
-                placeholder="Senior Partner"
-                required
-                disabled={isPending}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="department">
-                Department <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="department"
-                name="department"
-                placeholder="Litigation"
-                required
-                disabled={isPending}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="category">
-                Category <span className="text-destructive">*</span>
-              </Label>
-              <Select
-                name="category"
-                value={category}
-                onValueChange={setCategory}
-                disabled={isPending}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="partner">Partner</SelectItem>
-                  <SelectItem value="associate">Associate</SelectItem>
-                  <SelectItem value="management">Management</SelectItem>
-                  <SelectItem value="trainee">Trainee</SelectItem>
-                </SelectContent>
-              </Select>
-              <input type="hidden" name="category" value={category} />
-            </div>
-
-            {/* ✅ Photo Upload with Cloudinary */}
-            <div className="grid gap-2">
-              <Label>Profile Photo</Label>
-
-              {photoUrl && (
-                <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-200 group">
-                  <Image
-                    src={photoUrl}
-                    alt="Preview"
-                    fill
-                    className="object-cover"
-                    unoptimized
+          <div className="grid gap-6 py-4">
+            {/* Basic Info */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase">Basic Information</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">
+                    Name <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="John Doe"
+                    required
+                    disabled={isPending}
                   />
-                  <button
-                    type="button"
-                    onClick={handleRemovePhoto}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-lg transition-all opacity-0 group-hover:opacity-100"
-                    disabled={isPending || isUploading}
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
                 </div>
-              )}
 
-              <div className="flex gap-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                  disabled={isPending || isUploading}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isPending || isUploading}
-                  className="gap-2"
-                >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4" />
-                      {photoUrl ? "Change Photo" : "Upload Photo"}
-                    </>
-                  )}
-                </Button>
+                <div className="grid gap-2">
+                  <Label htmlFor="slug">Slug (URL)</Label>
+                  <Input
+                    id="slug"
+                    name="slug"
+                    placeholder="auto-generated-from-name"
+                    disabled={isPending}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave empty to auto-generate
+                  </p>
+                </div>
               </div>
 
-              <input type="hidden" name="photo_url" value={photoUrl} />
+              <div className="grid gap-2">
+                <Label htmlFor="role">
+                  Role 
+                </Label>
+                <Input
+                  id="role"
+                  name="role"
+                  placeholder="Senior Partner"
+                  disabled={isPending}
+                />
+              </div>
 
-              <p className="text-sm text-muted-foreground">
-                Max size: 10MB. Photo will be optimized automatically.
-              </p>
+              <div className="grid gap-2">
+                <Label htmlFor="department">
+                  Department 
+                </Label>
+                <Input
+                  id="department"
+                  name="department"
+                  placeholder="Litigation"
+                  disabled={isPending}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="category">
+                    Category <span className="text-destructive">*</span>
+                  </Label>
+                  <Select
+                    name="category"
+                    value={category}
+                    onValueChange={(value) => setCategory(value as TeamCategory)}
+                    disabled={isPending}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="partner">Partner</SelectItem>
+                      <SelectItem value="associate">Associate</SelectItem>
+                      <SelectItem value="management">Management</SelectItem>
+                      <SelectItem value="trainee">Trainee</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input type="hidden" name="category" value={category} />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="oath_year">Oath Year</Label>
+                  <Input
+                    id="oath_year"
+                    name="oath_year"
+                    type="number"
+                    placeholder="0"
+                    defaultValue="0"
+                    disabled={isPending}
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* ✅ vCard & PDF URLs (Direct Links) */}
-            <div className="grid gap-2">
-              <Label htmlFor="vcard_url">vCard URL (Contact Card)</Label>
-              <Input
-                id="vcard_url"
-                name="vcard_url"
-                type="url"
-                placeholder="https://example.com/contact.vcf"
-                disabled={isPending}
-              />
-              <p className="text-xs text-muted-foreground">
-                Direct link to .vcf file for adding contact to phone
-              </p>
+            {/* Contact Info */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase">Contact Information</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="name@iblaw.com"
+                    disabled={isPending}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+962 6 XXX XXXX"
+                    disabled={isPending}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="bio_pdf_url">Biography PDF URL</Label>
-              <Input
-                id="bio_pdf_url"
-                name="bio_pdf_url"
-                type="url"
-                placeholder="https://example.com/bio.pdf"
-                disabled={isPending}
-              />
-              <p className="text-xs text-muted-foreground">
-                Direct link to PDF for viewing/downloading
-              </p>
+            {/* ✅ Files & Media Section with Cloudinary Upload */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase">Files & Media</h3>
+              
+              <div className="grid gap-4">
+                {/* Photo Upload with Preview */}
+                <div className="grid gap-2">
+                  <Label>Profile Photo</Label>
+
+                  {/* Photo Preview */}
+                  {photoUrl && (
+                    <div className="relative w-40 h-40 rounded-lg overflow-hidden border-2 border-gray-200 group">
+                      <Image src={photoUrl} alt="Preview" fill className="object-cover" unoptimized />
+                      <Button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 shadow-lg transition-all opacity-0 group-hover:opacity-100"
+                        disabled={isPending || isAnyUploading}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Upload Button */}
+                  <div className="flex gap-2">
+                    <Input
+                      ref={photoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                      disabled={isPending || isAnyUploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => photoInputRef.current?.click()}
+                      disabled={isPending || isAnyUploading}
+                      className="gap-2"
+                    >
+                      {isUploadingPhoto ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="h-4 w-4" />
+                          {photoUrl ? "Change Photo" : "Upload Photo"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* Hidden input for form submission */}
+                  <input type="hidden" name="photo_url" value={photoUrl} />
+
+                  <p className="text-xs text-muted-foreground">
+                    Max size: 10MB. Formats: JPG, PNG, WebP. Photo will be optimized automatically.
+                  </p>
+                </div>
+
+                {/* vCard Upload */}
+                <div className="grid gap-2">
+                  <Label>vCard File</Label>
+                  
+                  {vcardUrl && (
+                    <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <FileDown className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm text-blue-700 flex-1">vCard uploaded</span>
+                      <button
+                        type="button"
+                        onClick={handleRemoveVcard}
+                        className="text-red-500 hover:text-red-600"
+                        disabled={isPending || isAnyUploading}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Input
+                      ref={vcardInputRef}
+                      type="file"
+                      accept=".vcf"
+                      onChange={handleVcardUpload}
+                      className="hidden"
+                      disabled={isPending || isAnyUploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => vcardInputRef.current?.click()}
+                      disabled={isPending || isAnyUploading}
+                      className="gap-2"
+                    >
+                      {isUploadingVcard ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <FileDown className="h-4 w-4" />
+                          {vcardUrl ? "Change vCard" : "Upload vCard"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <input type="hidden" name="vcard_url" value={vcardUrl} />
+                  <p className="text-xs text-muted-foreground">
+                    Max 1MB. .vcf file format only.
+                  </p>
+                </div>
+
+                {/* Bio PDF Upload */}
+                <div className="grid gap-2">
+                  <Label>Biography PDF</Label>
+                  
+                  {pdfUrl && (
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <FileText className="h-5 w-5 text-blue-600" />
+                      <span className="text-sm text-blue-700 flex-1">PDF uploaded</span>
+                      <button
+                        type="button"
+                        onClick={handleRemovePdf}
+                        className="text-red-500 hover:text-red-600"
+                        disabled={isPending || isAnyUploading}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Input
+                      ref={pdfInputRef}
+                      type="file"
+                      accept=".pdf"
+                      onChange={handlePdfUpload}
+                      className="hidden"
+                      disabled={isPending || isAnyUploading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => pdfInputRef.current?.click()}
+                      disabled={isPending || isAnyUploading}
+                      className="gap-2"
+                    >
+                      {isUploadingPdf ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <FileText className="h-4 w-4" />
+                          {pdfUrl ? "Change PDF" : "Upload PDF"}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <input type="hidden" name="bio_pdf_url" value={pdfUrl} />
+                  <p className="text-xs text-muted-foreground">
+                    Max 5MB. PDF format only.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="oath_year">Oath Year</Label>
-              <Input
-                id="oath_year"
-                name="oath_year"
-                type="number"
-                placeholder="0"
-                defaultValue="0"
-                disabled={isPending}
-              />
-              <p className="text-sm text-muted-foreground">
-                Lower numbers appear first
-              </p>
+            {/* Biography */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-gray-500 uppercase">Profile Details</h3>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="biography">Biography</Label>
+                <Textarea
+                  id="biography"
+                  name="biography"
+                  placeholder="Write a detailed biography..."
+                  rows={6}
+                  disabled={isPending}
+                  className="resize-none"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="education">Education</Label>
+                <Textarea
+                  id="education"
+                  name="education"
+                  placeholder="One qualification per line&#10;Example:&#10;LLM from University of X&#10;LLB from University of Y"
+                  rows={4}
+                  disabled={isPending}
+                  className="resize-none font-mono text-sm"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enter each qualification on a new line
+                </p>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="practice_areas">Practice Areas</Label>
+                <Textarea
+                  id="practice_areas"
+                  name="practice_areas"
+                  placeholder="One practice area per line&#10;Example:&#10;Intellectual Property&#10;Corporate Law&#10;Litigation"
+                  rows={4}
+                  disabled={isPending}
+                  className="resize-none font-mono text-sm"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Enter each practice area on a new line
+                </p>
+              </div>
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              disabled={isPending || isUploading}
+              disabled={isPending || isAnyUploading}
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
-              disabled={isPending || isUploading} 
+              disabled={isPending || isAnyUploading} 
               className="bg-main"
             >
               {isPending ? (
