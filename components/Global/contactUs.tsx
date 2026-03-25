@@ -1,5 +1,5 @@
 
-import { Mail, Phone, MapPin, SendHorizonal } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
 import ContactForm from "../Contacts/form";
 
@@ -8,22 +8,19 @@ import ContactForm from "../Contacts/form";
 export default function ContactSection() {
   
   return (
-    <div  className="min-h-screen bg-gray-50 py-16 px-4 sm:px-6 lg:px-8 w-full">
-      <div className="max-w-7xl mx-auto">
+    <div  className=" bg-gray-50 py-16  w-full">
+      <div className="max-w-7xl mx-auto ">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <ContactForm/>
 
           {/* Right Column - Contact Info */}
-          <div className="flex flex-col justify-start">
+          <div className="flex flex-col justify-start px-4 sm:px-6 lg:px-8 ">
             <div className="mb-8">
-              <p className="text-main font-semibold text-sm tracking-wider uppercase mb-4">
+              <h1 className="text-5xl font-bold text-main mb-6">
                 CONTACT US
-              </p>
-              <h1 className="text-5xl font-bold text-gray-900 mb-6">
-                Keep In Touch
               </h1>
               <p className="text-gray-600 text-lg leading-relaxed">
-                We're here to help and answer any question you might have. We
+                We&apos;re here to help and answer any question you might have. We
                 look forward to hearing from you.
               </p>
             </div>

@@ -5,8 +5,6 @@ import type { Metadata } from "next";
 import { TeamMembersTable } from "@/components/dashboard/team/team-members-table";
 import { AddTeamMemberDialog } from "@/components/dashboard/team/add-team-member-dialog";
 import { Users } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/backButton";
 
 export const metadata: Metadata = {

@@ -4,8 +4,6 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { ApplicationsTable } from "@/components/dashboard/application/applications-table";
 import { Briefcase } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/backButton";
 
 export const metadata: Metadata = {

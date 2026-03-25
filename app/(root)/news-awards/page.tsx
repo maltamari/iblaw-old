@@ -1,9 +1,9 @@
+// app/(root)/news-awards/page.tsx
 import { createClient } from "@/utils/supabase/server";
 import HeroSection from "@/components/Global/hero";
 import NewsAwardsGrid from "@/components/news-awards/news-awards-grid";
 import type { Metadata } from "next";
-import ContactSection from "@/components/Global/contactUs";
-import MeetingSection from "@/components/Home/contactBar";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "News & Awards",
@@ -29,10 +29,16 @@ export default async function NewsAwardsPage() {
         textClass="px-4 lg:w-220 text-6xl"
       />
       
-      <NewsAwardsGrid newsAwards={newsAwards || []} />
-      <MeetingSection/>
-      <ContactSection/>
-      
+      <Suspense 
+        fallback={
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-main"></div>
+          </div>
+        }
+      >
+        <NewsAwardsGrid newsAwards={newsAwards || []} />
+      </Suspense>
+
     </>
   );
 }

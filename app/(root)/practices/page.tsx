@@ -1,6 +1,4 @@
-import ContactSection from '@/components/Global/contactUs'
 import HeroSection from '@/components/Global/hero'
-import MeetingSection from '@/components/Home/contactBar'
 import Header from '@/components/Global/header'
 import PraciticesAndSectors from '@/components/Practices/praciticesandsectors'
 import type { Metadata } from "next";
@@ -20,8 +18,7 @@ function page() {
         IBLAW provides solid experience in established areas of practice, with up-to-date knowledge of
         frontier legal developments.'/>
     <PraciticesAndSectors/>
-    <MeetingSection/>
-    <ContactSection/>
+
     </>
   )
 }

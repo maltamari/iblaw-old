@@ -20,15 +20,17 @@ export async function createClient() {
             // The `set` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
             // user sessions.
+          console.error('Failed to remove cookie:', error);
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // The `delete` method was called from a Server Component.
+            // The `remove` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
-            // user sessions.
+            // user sessions. 
+            console.error('Failed to remove cookie:', error);
           }
         },
       },

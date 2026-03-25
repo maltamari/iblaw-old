@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 export default async function NewsAwardFormPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const supabase = await createClient();
   const {
@@ -29,7 +29,7 @@ export default async function NewsAwardFormPage({
       .select("*")
       .eq("id", resolvedParams.id)
       .single();
-    
+
     newsAward = data;
 
     // If not found, redirect to list

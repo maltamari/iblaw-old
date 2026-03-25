@@ -20,7 +20,7 @@ const PracticesSectorsDropdown = ({
   return (
     <div
       className={cn(
-        "w-[1400px]  max-w-[1200px] bg-white rounded-2xl shadow-2xl p-4",
+        "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white rounded-2xl shadow-2xl p-4",
         className
       )}
     >

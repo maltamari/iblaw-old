@@ -26,7 +26,7 @@ export default function Container({
   const paddingClasses = padding ? 'px-4 sm:px-6 lg:px-8' : '';
 
   return (
-    <div className={`w-full mx-auto flex flex-col items-center justify-center ${maxWidthClasses[maxWidth]} ${paddingClasses} ${className}`}>
+    <div className={`w-full mx-auto  ${maxWidthClasses[maxWidth]} ${paddingClasses} ${className}`}>
       {children}
     </div>
   );

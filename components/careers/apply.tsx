@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {  SendHorizontalIcon, Upload, X } from 'lucide-react';
+import { SendHorizontalIcon, Upload, X } from 'lucide-react';
 import { Textarea } from '../ui/textarea';
 import { Input } from '../ui/input';
 import MainButton from '../ui/mainButton';
@@ -34,10 +34,18 @@ type FormValues = z.infer<typeof formSchema>;
 // Constants
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-const INPUT_CLASS = "w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-main focus:outline-none transition-colors bg-gray-50";
+const INPUT_CLASS = "w-full px-4 py-3.5 rounded-xl border border-gray-300 focus:border-main focus:ring-2 focus:ring-main/20 focus:outline-none transition-all bg-white hover:border-gray-400";
+
+// ✅ File Upload Component Props Type
+interface FileUploadProps {
+  fileName: string;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onRemove: () => void;
+  disabled: boolean;
+}
 
 // File Upload Component
-const FileUpload = ({ fileName, onFileChange, onRemove, disabled }: any) => (
+const FileUpload = ({ fileName, onFileChange, onRemove, disabled }: FileUploadProps) => (
   <div>
     <label className="block text-sm font-medium text-gray-900 mb-2">
       Upload CV/Resume <span className="text-main">*</span>
@@ -169,23 +177,47 @@ const Apply = ({ activeTab, preSelectedPosition }: ApplyProps) => {
 
   return (
     <div className="animate-fade-in" role="tabpanel" id="panel-apply">
-      <h1 className="text-5xl font-bold text-main text-center mb-4">Apply Now</h1>
+      <h1 className="text-4xl md:text-5xl font-bold text-main text-center mb-4">Apply Now</h1>
       <div className="w-20 h-1 bg-main mx-auto mb-12"></div>
 
-      <div className="bg-white rounded-3xl p-12 shadow-xl max-w-3xl mx-auto">
-        <p className="text-center text-gray-600 text-base mb-12">
-          Interested in joining our team? Submit your application and our recruitment team will review your credentials and get back to you.
-        </p>
-        
+      <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl max-w-3xl mx-auto">
+        {/* Info Section Inside Form */}
+        <div className="mb-8 pb-8 border-b border-gray-200">
+          <p className="text-gray-700 text-base leading-relaxed mb-4">
+            Interested in joining our team? Interested candidates may email us their letter of interest along with the following required documents:
+          </p>
+          <ul className="space-y-2.5 mb-4">
+            <li className="flex items-start gap-3 text-gray-600">
+              <span className="text-main font-bold mt-0.5">•</span>
+              <span>CV</span>
+            </li>
+            <li className="flex items-start gap-3 text-gray-600">
+              <span className="text-main font-bold mt-0.5">•</span>
+              <span>Law School or University Transcripts</span>
+            </li>
+            <li className="flex items-start gap-3 text-gray-600">
+              <span className="text-main font-bold mt-0.5">•</span>
+              <span>Two references, preferably from previous employers</span>
+            </li>
+            <li className="flex items-start gap-3 text-gray-600">
+              <span className="text-main font-bold mt-0.5">•</span>
+              <span>Arabic and English writing samples</span>
+            </li>
+          </ul>
+          <p className="text-gray-600 text-sm">
+            Submit your application and our recruitment team will review your credentials and get back to you.
+          </p>
+        </div>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {['firstName', 'lastName'].map((name) => (
+              {(['firstName', 'lastName'] as const).map((name) => (
                 <FormField
                   key={name}
                   control={form.control}
-                  name={name as 'firstName' | 'lastName'}
+                  name={name}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -215,7 +247,13 @@ const Apply = ({ activeTab, preSelectedPosition }: ApplyProps) => {
                   <FormItem>
                     <FormLabel>Email Address <span className="text-main">*</span></FormLabel>
                     <FormControl>
-                      <Input {...field} type="email" className={INPUT_CLASS} placeholder="your.email@example.com" disabled={isSubmitting} />
+                      <Input 
+                        {...field} 
+                        type="email" 
+                        className={INPUT_CLASS} 
+                        placeholder="your.email@example.com" 
+                        disabled={isSubmitting} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -229,7 +267,13 @@ const Apply = ({ activeTab, preSelectedPosition }: ApplyProps) => {
                   <FormItem>
                     <FormLabel>Phone Number <span className="text-main">*</span></FormLabel>
                     <FormControl>
-                      <Input {...field} type="tel" className={INPUT_CLASS} placeholder="+962 XX XXX XXXX" disabled={isSubmitting} />
+                      <Input 
+                        {...field} 
+                        type="tel" 
+                        className={INPUT_CLASS} 
+                        placeholder="+962 XX XXX XXXX" 
+                        disabled={isSubmitting} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -286,14 +330,16 @@ const Apply = ({ activeTab, preSelectedPosition }: ApplyProps) => {
             />
 
             {/* Submit Button */}
-            <MainButton
-              type="submit"
-              disabled={isSubmitting}
-              text={isSubmitting ? 'Submitting...' : 'Submit Application'}
-              right={SendHorizontalIcon}
-              className="w-full"
-              spanClass="font-bold text-lg"
-            />
+            <div className="pt-2">
+              <MainButton
+                type="submit"
+                disabled={isSubmitting}
+                text={isSubmitting ? 'Submitting...' : 'Submit Application'}
+                right={SendHorizontalIcon}
+                className="w-full"
+                spanClass="font-bold text-lg"
+              />
+            </div>
           </form>
         </Form>
       </div>

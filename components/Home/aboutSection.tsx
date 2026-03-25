@@ -11,7 +11,7 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
           {/* Left Side - Image */}
-          <div className="lg:-mt-50">
+          <div className="">
             <div className="relative h-[200px] md:h-[300px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl">
               <Image
                 src="/consultation.png"
@@ -23,26 +23,26 @@ export default function AboutSection() {
           </div>
 
           {/* Right Side - Content */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Small Title */}
-            <p className="text-lg font-semibold text-gray-900 uppercase tracking-wider">
+            <p className="text-lg font-semibold text-gray-900 uppercase tracking-wider mt-2">
               ABOUT IBLAW
             </p>
 
             {/* Main Heading */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-main leading-tight capitalize px-2">
+            <h2 className="text-4xl md:text-5xl lg:text-4xl font-bold text-main leading-tight capitalize ">
               A leading full service law firm
             </h2>
 
             {/* Description */}
-            <p className="text-xl md:text-lg text-ctext leading-relaxed w-full px-2 text-justify">
-              IBLAW is a leading full-service law firm in the Hashemite Kingdom of Jordan dedicated to providing its clients with unparalleled legal services. Our lawyers consistently strive to deliver excellence in the most complex and demanding legal matters by overcoming and circumventing the legal challenges our clients face. Our lawyers consistently strive to deliver excellence under several industries and legal practices.
-            </p>
+            <p className="text-xl md:text-xl text-ctext leading-relaxed w-full  text-justify">
+              IBLAW is a leading full-service law firm in the Hashemite Kingdom of Jordan dedicated to providing its clients with unparalleled legal services. Our lawyers consistently strive to deliver excellence in the most complex and demanding legal matters by overcoming and circumventing the legal challenges our clients face. Our lawyers consistently strive to deliver excellence under several industries and legal practices.            </p>
 
             {/* Learn More Button */}
-            <Link href={"/about"} className="pt-4 ">
+              <Link href={"/about"} className="pt-4 ">
              <MainButton text={"Learn More"} right={RightArrow}  className='w-full h-12 justify-start text-xl'/>
             </Link>
+
           </div>
 
         </div>

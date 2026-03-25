@@ -21,11 +21,11 @@ export default function Footer() {
               height={30}
             />
             </Link>
-            <p className="text-blue-100 leading-relaxed">
-              IBLAW is a leading full service law firm in Jordan dedicated to
-              working with clients to help them achieve their personal and
-              professional goals and overcome legal challenges.
-            </p>
+              <p className="text-blue-100 leading-relaxed text-justify">
+                IBLAW is a leading full service law firm in Jordan dedicated to
+                working with clients to help them achieve their personal and
+                professional goals and overcome legal challenges.
+              </p>
             <a
               href="https://linkedin.com"
               target="_blank"

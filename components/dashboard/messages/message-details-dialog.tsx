@@ -9,16 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Mail, Calendar, User } from "lucide-react";
+import type { Message } from "@/lib/message";
 
-type Message = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  subject: string;
-  message: string;
-  created_at: string;
-};
 
 export function MessageDetailsDialog({
   message,

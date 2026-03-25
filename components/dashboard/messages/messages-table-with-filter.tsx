@@ -1,3 +1,4 @@
+// components/dashboard/messages/messages-table-with-filter.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,7 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -20,21 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, Trash2, Search, Filter } from "lucide-react";
+import { Eye, Trash2, Filter } from "lucide-react";
 import { MessageDetailsDialog } from "./message-details-dialog";
 import { DeleteMessageDialog } from "./delete-message-dialog";
 import { SUBJECT_OPTIONS } from "@/lib/constants";
+import type { Message } from "@/lib/message";
 
-type Message = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  subject: string;
-  subject_key?: string;
-  message: string;
-  created_at: string;
-};
 
 interface Props {
   messages: Message[];
@@ -42,7 +33,7 @@ interface Props {
 }
 
 export function MessagesTableWithFilter({ messages, subjectStats }: Props) {
-  const [search, setSearch] = useState("");
+  const [search,] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [viewMessage, setViewMessage] = useState<Message | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);

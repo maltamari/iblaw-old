@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { Briefcase, MapPin, Clock, Send, SendHorizonalIcon, ArrowRightIcon } from 'lucide-react';
+import { Briefcase, MapPin, Clock, SendHorizonalIcon, ArrowRightIcon } from 'lucide-react';
 import { getJobListings, JobListing } from '@/utils/job-listing-actions';
 import CheckIcon from '../ui/checkIcon';
 import MainButton from '../ui/mainButton';

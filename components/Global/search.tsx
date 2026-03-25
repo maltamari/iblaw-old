@@ -1,5 +1,7 @@
-"use client"
-import React, { useState } from 'react';
+"use client";
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, X, FileText, Briefcase, Bookmark, Users, GraduationCap } from 'lucide-react';
 import { allSearchResults } from '@/lib/searchData';
 import { Input } from '../ui/input';
@@ -12,9 +14,10 @@ interface SearchSectionProps {
 
 const SearchSection: React.FC<SearchSectionProps> = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   // Handle ESC key
-  React.useEffect(() => {
+  useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -69,10 +72,11 @@ const SearchSection: React.FC<SearchSectionProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleResultClick = (href: string) => {
-    window.location.href = href;
+  // ✅ استخدم useCallback مع Next.js router
+  const handleResultClick = useCallback((href: string) => {
     onClose();
-  };
+    router.push(href);
+  }, [onClose, router]);
 
   if (!isOpen) return null;
 
@@ -98,8 +102,10 @@ const SearchSection: React.FC<SearchSectionProps> = ({ isOpen, onClose }) => {
               autoFocus
             />
             <Button
+              variant="ghost"
+              size="icon"
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="hover:bg-gray-100"
             >
               <X className="w-5 h-5 text-gray-600" />
             </Button>
@@ -161,7 +167,9 @@ const SearchSection: React.FC<SearchSectionProps> = ({ isOpen, onClose }) => {
               {filteredResults.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-gray-500 text-lg">No results found</p>
-                  <p className="text-gray-400 text-sm mt-2">Try searching for something else</p>
+                  <p className="text-gray-400 text-sm mt-2">
+                    Try searching for something else
+                  </p>
                 </div>
               )}
             </div>

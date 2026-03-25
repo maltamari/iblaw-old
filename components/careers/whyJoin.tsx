@@ -12,9 +12,9 @@ const WhyJoin = ({ activeTab }: WhyJoinProps) => {
       <h1 className="text-5xl font-bold text-main text-center mb-4">
         Why Join IBLAW?
       </h1>
-      <div className="w-20 h-1 bg-main mx-auto mb-12"></div>
+      <div className="w-20 h-1 bg-main  mb-12 max-w-7xl mx-auto "></div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
         {whyJoinReasons.map((reason, index) => (
           <div
             key={index}

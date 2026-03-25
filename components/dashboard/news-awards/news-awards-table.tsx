@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Edit, Trash2, Search } from "lucide-react";
+import {  Edit, Trash2, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { DeleteNewsAwardDialog } from "./delete-news-award-dialog";

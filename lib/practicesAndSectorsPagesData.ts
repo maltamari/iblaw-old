@@ -1,14 +1,13 @@
+import {FinancialServices, Intelle} from "@/components/ui/svg";
 import {
   Briefcase,
   Building2,
   Scale,
   TrendingUp,
   Users,
-  Lightbulb,
   Building,
   Calculator,
   ScrollText,
-  ShoppingCart,
   CheckCircle2,
   Zap,
   Radio,
@@ -23,7 +22,7 @@ import type { LucideIcon } from "lucide-react";
 export type UnifiedItem = {
   slug: string;
   title: string;
-  Icon: LucideIcon;
+  Icon: LucideIcon | React.FC; 
   description: string;
   details: string;
   type: "practice" | "sector";
@@ -37,11 +36,11 @@ export const practicesAndSectorsBase = [
   { slug: "dispute-resolution", title: "Dispute Resolution", Icon: Scale },
   { slug: "capital-markets-securities", title: "Capital Markets & Securities", Icon: TrendingUp },
   { slug: "employment-labor", title: "Employment & Labor", Icon: Users },
-  { slug: "intellectual-property", title: "Intellectual Property", Icon: Lightbulb },
+  { slug: "intellectual-property", title: "Intellectual Property", Icon: Intelle },
   { slug: "real-estate-development", title: "Real Estate & Development", Icon: Building },
   { slug: "taxation", title: "Taxation", Icon: Calculator },
   { slug: "public-policy-legislative", title: "Public Policy & Legislative Drafting", Icon: ScrollText },
-  { slug: "privatization-public-procurement", title: "Privatization & Public Procurement", Icon: ShoppingCart },
+  { slug: "privatization-public-procurement", title: "Privatization & Public Procurement", Icon: FinancialServices },
   { slug: "corporate-governance-compliance", title: "Corporate Governance & Compliance", Icon: CheckCircle2 },
 
   { slug: "energy", title: "Energy", Icon: Zap },

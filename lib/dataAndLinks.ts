@@ -1,7 +1,7 @@
+import { Intelle } from "@/components/ui/svg";
 import {
   Award,
   Scale,
-  Lightbulb,
   Home,
   Users,
   Globe,
@@ -10,14 +10,15 @@ import {
   Building2,
   Info,
   Briefcase,
-  Phone
+  Phone,
+  LucideIcon
 } from "lucide-react";
 import React from "react";
 
 type Links = {
   name: string;
   href: string;
-  icon?: React.ComponentType<any>;
+  icon?: React.ComponentType |LucideIcon;
 };
 
 /* ---------------------- Footer LINKS ---------------------- */
@@ -37,7 +38,7 @@ export const quickLinks: Links[] = [
   { name: "Practices & Sectors", href: "/practices", icon: Scale },
   { name: "Our Team", href: "/team", icon: Users },
   { name: "Careers", href: "/careers", icon: Briefcase },
-  { name: "Contact Us", href: "#contact", icon: Phone },
+  { name: "Contact Us", href: "/contact-us", icon: Phone },
 
 ];
 
@@ -68,13 +69,14 @@ export const slides = [
       title: "Dispute Resolution",
       description: "Clear strategy. Results you can trust",
     },
-  ],
-  [
-    {
-      icon: Lightbulb,
+     {
+      icon: Intelle,
       title: "Intellectual Property",
       description: "Protecting your innovations and creative works",
-    },
+    }
+  ],
+  [
+
     {
       icon: Home,
       title: "Real Estate",
@@ -84,10 +86,7 @@ export const slides = [
       icon: Users,
       title: "Employment Law",
       description: "Expert guidance on workplace matters",
-    },
-  ],
-  [
-    {
+    },    {
       icon: Globe,
       title: "International Trade",
       description: "Navigating global business regulations",
@@ -97,6 +96,8 @@ export const slides = [
       title: "Compliance",
       description: "Ensuring regulatory adherence",
     },
+  ],
+  [
     {
       icon: Handshake,
       title: "Mergers & Acquisitions",

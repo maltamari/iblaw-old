@@ -8,7 +8,7 @@ interface Prpos{
 function Header({text}:Prpos) {
   return (
     <div className="mb-12 mt-10 w-full">
-      <p className={cn("px-10 text-gray-600 max-w-8xl mx-auto mb-8 leading-relaxed text-center")}>
+      <p className={cn(" text-gray-600 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 leading-relaxed text-justify")}>
         {text}
       </p>
     </div>

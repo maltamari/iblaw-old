@@ -1,3 +1,4 @@
+// team-members-table.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ExternalLinkIcon, Pencil, Trash2 } from "lucide-react";
+import {  Pencil, Trash2 } from "lucide-react";
 import { deleteTeamMember,TeamMember } from "@/utils/team-actions";
 import { toast } from "sonner";
 import {
@@ -31,8 +32,15 @@ export function TeamMembersTable({ members }: { members: TeamMember[] }) {
   const [editMember, setEditMember] = useState<TeamMember | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
-
+const sortedMembers = [...members].sort((a, b) => {
+  if (a.category === 'partner' || a.category === 'associate') {
+    if (a.oath_year !== b.oath_year) {
+      return a.oath_year - b.oath_year;
+    }
+  }
+  
+  return a.name.localeCompare(b.name);
+});
   const handleDelete = async () => {
     if (!deleteId) return;
 
@@ -139,7 +147,7 @@ export function TeamMembersTable({ members }: { members: TeamMember[] }) {
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-amber-50 hover:bg-destructive/70"
             >
               {isDeleting ? "Deleting..." : "Delete"}
             </AlertDialogAction>

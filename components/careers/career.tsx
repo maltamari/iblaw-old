@@ -1,8 +1,7 @@
 "use client"
 import { useState } from 'react';
-import { Star, Users, Briefcase, Send, SendHorizonalIcon } from 'lucide-react';
+import { Star, Briefcase, SendHorizonalIcon } from 'lucide-react';
 import WhyJoin from './whyJoin';
-import Life from './life';
 import Current from './opportunities';
 import Apply from './apply';
 import { Button } from '../ui/button';
@@ -13,8 +12,7 @@ const CareersPage = () => {
 
   const tabs = [
     { id: 'why-join', label: 'Why Join IBLAW', icon: Star },
-    { id: 'life', label: 'Life at IBLAW', icon: Users },
-    { id: 'opportunities', label: 'Join Our Team', icon: Briefcase },
+    { id: 'opportunities', label: 'Current Opportunities', icon: Briefcase },
     { id: 'apply', label: 'Apply Now', icon: SendHorizonalIcon }
   ];
 
@@ -65,9 +63,8 @@ const CareersPage = () => {
       </nav>
 
       {/* Content Sections */}
-      <main className="max-w-7xl mx-auto px-6 py-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <WhyJoin activeTab={activeTab} />
-        <Life activeTab={activeTab} />
         <Current activeTab={activeTab} onApplyClick={handleApplyClick} />
         <Apply activeTab={activeTab} preSelectedPosition={preSelectedPosition} />
       </main>

@@ -45,25 +45,28 @@ const LoginButton = () => {
     };
   }, [supabase, router]);
 
-  const handleSignOut = async () => {
-    try {
-      setIsLoggingOut(true);
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error("Error signing out:", error);
-        return;
-      }
-      
-      setUser(null);
-      router.push("/");
-      router.refresh();
-    } catch (error) {
-      console.error("Error signing out:", error);
-    } finally {
-      setIsLoggingOut(false);
-    }
-  };
+ const handleSignOut = async () => {
+  try {
+    setIsLoggingOut(true);
+
+    await fetch("/api/logout", {
+      method: "POST",
+    });
+
+    setUser(null);
+    router.push("/login");
+    router.refresh();
+  } catch (error) {
+    console.error("Error signing out:", error);
+  } finally {
+    setIsLoggingOut(false);
+  }
+};
+
+  // ✅ OPTION 2: Use redirect to logout page (even faster)
+ const handleSignOutWithRedirect = () => {
+  router.push("/logout");
+};
 
   if (loading) {
     return (
@@ -78,7 +81,7 @@ const LoginButton = () => {
       <Button
         onClick={handleSignOut}
         disabled={isLoggingOut}
-        className="bg-main text-white hover:bg-main/50  cursor-pointer "
+        className="bg-main text-white hover:bg-main/50 cursor-pointer"
       >
         {isLoggingOut ? (
           <>

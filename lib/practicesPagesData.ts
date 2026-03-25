@@ -1,13 +1,14 @@
+import { FinancialServices, Intelle } from '@/components/ui/svg';
 import { 
-  Briefcase, Building2, Scale, TrendingUp, Users, Lightbulb, 
-  Building, Calculator, ScrollText, ShoppingCart, CheckCircle2, 
+  Briefcase, Building2, Scale, TrendingUp, Users, 
+  Building, Calculator, ScrollText, CheckCircle2, 
   Zap, Radio, Landmark, Globe, Wrench ,LucideIcon
 } from 'lucide-react'
 
 export interface PracticeData {
   slug: string
   title: string
-  icon: LucideIcon
+  icon: LucideIcon | React.FC; 
   heroImage: string
 
   shortDescription: string
@@ -185,7 +186,7 @@ description3:
 'intellectual-property': {
   slug: 'intellectual-property',
   title: 'Intellectual Property',
-  icon: Lightbulb,
+  icon: Intelle,
   heroImage: '/HeroPractices.png',
 
   shortDescription:
@@ -361,7 +362,7 @@ description3:
   'privatization-public-procurement': {
   slug: 'privatization-public-procurement',
   title: 'Privatization & Public Procurement',
-  icon: ShoppingCart,
+  icon: FinancialServices,
   heroImage: '/HeroPractices.png',
 
   shortDescription:

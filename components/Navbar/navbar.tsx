@@ -25,12 +25,47 @@ function Navbar() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Helper function للتنقل للـ contact
+  const handleContactNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    
+    // إذا كنا في الـ home page
+    if (pathname === "/") {
+      // نزل للـ section
+      document.getElementById("contact")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    } else {
+      // إذا كنا في صفحة ثانية، روح لصفحة contact-us
+      window.location.href = "/contact-us";
+    }
+    
+    // إغلاق الـ mobile menu إذا كان مفتوح
+    setMenu(false);
+  };
 
+  // Helper function لـ Schedule A Meeting
+  const handleScheduleMeeting = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    
+    // إذا كنا في الـ home page
+    if (pathname === "/") {
+      // نزل للـ section
+      window.history.pushState({}, '', '/?subject=schedule-meeting#contact');
+      smoothScrollToElement("contact", 1000);
+    } else {
+      // إذا كنا في صفحة ثانية، روح لصفحة contact-us مع الـ query parameter
+      window.location.href = "/contact-us?subject=schedule-meeting";
+    }
+    
+    // إغلاق الـ mobile menu إذا كان مفتوح
+    setMenu(false);
+  };
 
   return (
-    <nav className="sticky top-10 bg-white border-b border-gray-200 z-50">
-      <div className="sticky max-w-7xl mx-auto py-4">
-        <div className="flex items-center justify-between">
+    <nav className="sticky top-10 bg-white border-b border-gray-200 z-50 w-full">
+      <div className="sticky max-w-7xl mx-auto   px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/">
             <div className="w-12 h-12 flex items-center justify-center">
@@ -54,13 +89,10 @@ function Navbar() {
                 >
                   {/* Link */}
                   <Link
-                    href={link.href === "#contact" ? "/#contact" : link.href}
+                    href={link.href}
                     onClick={(e) => {
-                      if (link.href === "#contact") {
-                        e.preventDefault();
-                        document.getElementById("contact")?.scrollIntoView({
-                          behavior: "smooth",
-                        });
+                      if (link.href === "/contact-us") {
+                        handleContactNavigation(e);
                       }
                     }}
                     className={`font-medium text-md transition-colors flex items-center gap-1 ${
@@ -104,7 +136,7 @@ function Navbar() {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center ">
             {/* Search  */}
             <Button
               className="bg-transparent hover:bg-transparent"
@@ -125,12 +157,8 @@ function Navbar() {
             )}
 
             <Link
-              href="#contact?subject=schedule-meeting"
-              onClick={(e) => {
-                e.preventDefault();
-                window.history.pushState({}, '', '?subject=schedule-meeting#contact');
-                smoothScrollToElement("contact", 1000); // 1000ms = 1 second
-              }}
+              href="/"
+              onClick={handleScheduleMeeting}
               className=""
             >
               <MainButton
@@ -164,17 +192,13 @@ function Navbar() {
                 return (
                   <Link
                     key={link.name}
-                    href={
-                      link.href === "#contact" ? "/#contact" : link.href
-                    }
+                    href={link.href === "#contact" ? "/" : link.href}
                     onClick={(e) => {
                       if (link.href === "#contact") {
-                        e.preventDefault();
-                        document.getElementById("contact")?.scrollIntoView({
-                          behavior: "smooth",
-                        });
+                        handleContactNavigation(e);
+                      } else {
+                        setMenu(false);
                       }
-                      setMenu(false);
                     }}
                     className={`flex items-center gap-4 px-4 py-4 rounded-lg transition-all ${
                       pathname === link.href
@@ -194,20 +218,14 @@ function Navbar() {
             {/*  Schedule A Meeting */}
             <div className="border-t border-gray-200 pt-6">
               <Link
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById("contact")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                  setMenu(false);
-                }}
+                href="/"
+                onClick={handleScheduleMeeting}
                 className="block w-full"
               >
                 <MainButton
                   text="Schedule A Meeting"
                   left={LucideCalendarRange}
-                  className="w-full h-12"
+                  className="w-full h-12 "
                 />
               </Link>
             </div>

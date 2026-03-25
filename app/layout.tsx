@@ -7,6 +7,7 @@ import Container from "@/components/Global/container";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/Global/footer";
 import ScrollRestorer from "@/components/Global/ScrollRestorer";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
   authors: [{ name: "IBLaw" }],
   creator: "IBLaw",
   publisher: "IBLaw",
-  metadataBase: new URL("https://iblaw.com"), 
+  metadataBase: new URL("https://iblaw.com"),
   openGraph: {
     title: "IBLaw | International Business Law Firm",
     description:
@@ -55,21 +56,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning={true}
-      >
-        <Topbar/>
-        <Navbar/>
-        <ScrollRestorer/>
-        <Container maxWidth="full" padding={false}>
-        {children}
-        </Container>
-        <Footer/>
-        <Toaster position="top-right"/>
-      </body>
-   
+    <html lang="en" >
+<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+  <Topbar />
+
+  <Suspense fallback={null}>
+    <Navbar />
+  </Suspense>
+
+  <Suspense fallback={null}>
+    <ScrollRestorer />
+  </Suspense>
+
+  <Container maxWidth="full" padding={false}>
+    {children}
+  </Container>
+
+  <Footer />
+  <Toaster position="top-right" />
+</body>
+
     </html>
   );
 }

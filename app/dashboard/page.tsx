@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Settings,
   Award,
+  Activity,
 } from "lucide-react";
 import LoginButton from "@/components/ui/LoginLogoutButton";
 
@@ -35,7 +36,7 @@ export default async function DashboardPage() {
   }
 
   // Get statistics
-  const [teamCount, applicationsCount, messagesCount,jobListingsCount,emailSettingsCount,newsAwardsCounts] = await Promise.all([
+  const [teamCount, applicationsCount, messagesCount,jobListingsCount,emailSettingsCount,newsAwardsCounts,activityCounts] = await Promise.all([
     supabase.from("team_members").select("*", { count: "exact", head: true }),
     supabase
       .from("job_applications")
@@ -51,6 +52,9 @@ export default async function DashboardPage() {
       .select("*", { count: "exact", head: true }),
        supabase
       .from("news_awards")
+      .select("*", { count: "exact", head: true }),
+       supabase
+      .from("audit_logs")
       .select("*", { count: "exact", head: true }),
   ]);
 
@@ -104,12 +108,19 @@ export default async function DashboardPage() {
       description: "Total Email Categories",
       href: "/dashboard/email-settings",
     },
-          {
+    {
       title: "News & Awards",
       value: newsAwardsCounts.count || 0,
       icon: Award,
       description: "Total  News & Awards",
       href: "/dashboard/news-awards",
+    },
+    {
+      title: "Activity Logs",
+      value: activityCounts.count || 0,
+      icon: Activity,
+      description: "Total logged activities",
+      href: "/dashboard/audit-logs",
     },
   ] 
 
@@ -251,7 +262,7 @@ export default async function DashboardPage() {
                         )}
                       </p>
                     </div>
-                    <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
+                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
                       New
                     </span>
                   </div>

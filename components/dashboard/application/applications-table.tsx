@@ -10,7 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -19,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Eye, Download, Trash2, Search, Filter } from "lucide-react";
+import { Eye, Download, Trash2, Filter } from "lucide-react";
 import { ApplicationDetailsDialog } from "./application-details-dialog";
 import { DeleteApplicationDialog } from "./delete-application-dialog";
 import { getSignedCVUrl } from "@/utils/application-actions";
@@ -42,7 +41,7 @@ export function ApplicationsTable({
 }: {
   applications: Application[];
 }) {
-  const [search, setSearch] = useState("");
+  const [search, ] = useState("");
   const [selectedPosition, setSelectedPosition] = useState<string>("all");
   const [viewApplication, setViewApplication] = useState<Application | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);

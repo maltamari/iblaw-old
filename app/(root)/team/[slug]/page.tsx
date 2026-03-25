@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Mail, Phone, FileDown, FileText, Contact2Icon, LucideFileUser } from "lucide-react";
+import { ArrowLeft, Mail, Phone, FileText, LucideFileUser } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTeamMemberBySlug } from "@/utils/team-actions";
 import type { Metadata } from "next";
@@ -62,8 +62,8 @@ export default async function TeamMemberPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 w-full">
       {/* Header with Back Button */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="bg-white border-b  ">
+        <div className=" py-6 max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <Link href="/team" className="inline-flex items-center text-main hover:bg-main/5 p-2 rounded-md transition-all">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Team
@@ -73,10 +73,10 @@ export default async function TeamMemberPage({ params }: Props) {
 
       {/* Profile Header */}
       <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8  py-12">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8 ">
             {/* Avatar */}
-            <div className="relative w-32 h-32 md:w-48 md:h-48 rounded-full bg-main flex items-center justify-center shadow-xl shrink-0 overflow-hidden">
+            <div className=" relative w-32 h-32 md:w-48 md:h-48 rounded-full bg-main flex items-center justify-center shadow-xl shrink-0 overflow-hidden">
               {member.photo_url ? (
                 <Image
                   src={getGoogleDriveImageUrl(member.photo_url)}
@@ -100,9 +100,11 @@ export default async function TeamMemberPage({ params }: Props) {
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 mb-4">{member.role}</p>
 
-              <span className="inline-flex items-center rounded-full bg-blue-100/70 px-4 py-1.5 text-sm font-semibold text-main uppercase">
-                {categoryLabels[member.category]}
-              </span>
+              <Link href={`/team#associate`} className="inline-block mb-4">
+                <span className="text-sm font-semibold text-white bg-main px-4 py-2 rounded-full shadow-md">
+                  {categoryLabels[member.category as keyof typeof categoryLabels] || "TEAM MEMBER"}
+                </span>
+              </Link>
 
               {/* Contact Info */}
               {(member.email || member.phone) && (
@@ -127,7 +129,7 @@ export default async function TeamMemberPage({ params }: Props) {
               )}
 
               {/* ✅ Download Buttons - Via API Route */}
-              {member.category === 'partner' && (member.vcard_url || member.bio_pdf_url) && (
+              {(member.vcard_url || member.bio_pdf_url) && (
                 <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                   {member.vcard_url && (
                     <Link 
@@ -141,15 +143,17 @@ export default async function TeamMemberPage({ params }: Props) {
                     </Link>
                   )}
                   {member.bio_pdf_url && (
-                    <a 
-                      href={`/api/download?url=${encodeURIComponent(member.bio_pdf_url)}&type=pdf&filename=${encodeURIComponent(member.name.replace(/\s+/g, '-'))}-Biography.pdf`}
-                      className="inline-block"
-                    >
-                      <Button className="bg-main rounded-full text-white font-bold w-full sm:w-auto transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-400/20">
-                        <FileText className="h-4 w-4 " />
-                        Download Bio PDF
-                      </Button>
-                    </a>
+                    <Link
+                        href={`/api/download?url=${encodeURIComponent(member.bio_pdf_url)}&type=pdf&filename=${encodeURIComponent(member.name.replace(/\s+/g, '-'))}-Biography.pdf&inline=true`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block"
+                      >
+                        <Button className="bg-main rounded-full text-white font-bold">
+                          <FileText className="h-4 w-4" />
+                          View Bio PDF
+                        </Button>
+                      </Link>
                   )}
                 </div>
               )}
@@ -159,7 +163,7 @@ export default async function TeamMemberPage({ params }: Props) {
       </div>
 
       {/* Content Sections */}
-      <div className="max-w-7xl mx-auto px-4 py-12 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 space-y-8">
         {/* Practice Areas */}
         {member.practice_areas && member.practice_areas.length > 0 && (
           <div className="bg-white rounded-3xl p-8 shadow-lg">

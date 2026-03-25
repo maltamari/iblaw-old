@@ -2,8 +2,6 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { EmailSettingsClient } from "@/components/dashboard/email-settings/email-settings-client";
 import { Settings } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/backButton";
 
 export default async function EmailSettingsPage() {

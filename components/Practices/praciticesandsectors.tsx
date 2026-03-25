@@ -20,7 +20,7 @@ const PracticesAndSectors = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-16 px-4 w-full">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Tabs */}
         <div className="text-center mb-12 animate-fade-in">
           <div className="inline-flex rounded-full bg-white p-5 shadow-lg">

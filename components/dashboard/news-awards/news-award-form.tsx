@@ -30,6 +30,7 @@ import {
 import { toast } from "sonner";
 import { Save, Upload, X } from "lucide-react";
 import Image from "next/image";
+import { NewsAward } from "@/lib/message";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -39,12 +40,13 @@ const formSchema = z.object({
   image_url: z.string().min(1, "Image is required"),
   content: z.string().optional(),
   published: z.boolean(),
+  url: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 interface Props {
-  newsAward: any;
+  newsAward:NewsAward;
   isNew: boolean;
 }
 
@@ -62,11 +64,12 @@ export function NewsAwardForm({ newsAward, isNew }: Props) {
     defaultValues: {
       title: newsAward?.title || "",
       excerpt: newsAward?.excerpt || "",
-      category: newsAward?.category || "News",
+      category: newsAward?.category || "Award",
       date: newsAward?.date || new Date().toISOString().split("T")[0],
       image_url: newsAward?.image_url || "",
       content: newsAward?.content || "",
       published: newsAward?.published ?? true,
+      url:newsAward?.url||"",
     },
   });
 
@@ -160,7 +163,7 @@ export function NewsAwardForm({ newsAward, isNew }: Props) {
       router.push("/dashboard/news-awards");
       router.refresh();
     } catch (error) {
-      console.error("Error saving:", error);
+      console.log("Error saving:", error);
       toast.error("Failed to save. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -168,7 +171,7 @@ export function NewsAwardForm({ newsAward, isNew }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8">
+    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Title */}
@@ -260,7 +263,28 @@ export function NewsAwardForm({ newsAward, isNew }: Props) {
               )}
             />
           </div>
-
+          {/* LinkedIn Post URL */}
+          <FormField
+            control={form.control}
+            name="url"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>LinkedIn Post</FormLabel>
+                <FormControl>
+                  <Input 
+                    {...field} 
+                    type="url" 
+                    placeholder="https://www.linkedin.com/posts/..."
+                    disabled={isSubmitting} 
+                  />
+                </FormControl>
+                <FormDescription>
+                  Add a LinkedIn post URL (optional)
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           {/* Image Upload with Cloudinary */}
           <FormField
             control={form.control}
@@ -318,7 +342,7 @@ export function NewsAwardForm({ newsAward, isNew }: Props) {
                     )}
                   </Button>
 
-                  <input
+                  <Input
                     id="image-upload"
                     type="file"
                     accept="image/*"

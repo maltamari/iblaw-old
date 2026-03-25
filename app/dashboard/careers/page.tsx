@@ -1,12 +1,12 @@
+// app/dashboard/careers/page.tsx
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { JobListingsTable } from "@/components/dashboard/job-listing/job-listings-table";
-import { AddJobListingDialog } from "@/components/dashboard/job-listing/add-job-listing-dialog";
+import { AddJobListingDialog } from "@/components/dashboard/job-listing/job-listing-dialogs";
 import { Briefcase } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import BackButton from "@/components/ui/backButton";
+import { createCachedQuery } from "@/lib/cache";
 
 export const metadata: Metadata = {
   title: "Careers Management - Dashboard",
@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// ✅ Job types configuration
 const jobTypes = [
   { key: 'Full-time', label: 'Full-time' },
   { key: 'part-time', label: 'Part-time' },
@@ -21,20 +22,33 @@ const jobTypes = [
   { key: 'internship', label: 'Internship' },
 ] as const;
 
+// ✅ Cached query for job listings
+const getJobListings = createCachedQuery(async () => {
+  const supabase = await createClient();
+  
+  const { data, error } = await supabase
+    .from("job_listings")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("❌ Error fetching job listings:", error);
+    return null;
+  }
+
+  return data;
+});
+
 export default async function CareersManagementPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
-  const { data: allJobs, error } = await supabase
-    .from("job_listings")
-    .select("*")
-    .order("created_at", { ascending: false });
+  // ✅ Fetch jobs with caching
+  const allJobs = await getJobListings();
 
-  // Debug: شوف شو في بالـ database
-  console.log("Error:", error);
-
+  // ✅ Group jobs by type (نفس اللوجيك القديم)
   const groupedJobs = jobTypes.map(type => ({
     ...type,
     jobs: allJobs?.filter(j => j.type === type.key) || []
@@ -90,7 +104,7 @@ export default async function CareersManagementPage() {
         ))}
       </div>
 
-      {/* All Jobs Section - إذا ما في jobs محددة حسب النوع */}
+      {/* All Jobs Section */}
       {totalJobs > 0 && (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
@@ -101,7 +115,7 @@ export default async function CareersManagementPage() {
         </div>
       )}
 
-      {/* Job Sections by Type -  */}
+      {/* Job Sections by Type */}
       {groupedJobs.map(({ label, jobs }) => 
         jobs.length > 0 && (
           <div key={label} className="space-y-4">

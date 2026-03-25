@@ -36,15 +36,18 @@ const Employees = () => {
       const { data, error } = await getTeamMembers();
       
       if (data && !error) {
-        // تقسيم البيانات حسب الفئة وترتيبها أبجدياً تلقائياً
         const grouped = {
           partners: data
             .filter(m => m.category === 'partner')
-            .sort((a, b) => a.name.localeCompare(b.name)),
+              .sort((a, b) => {if (a.oath_year !== b.oath_year) {
+                return a.oath_year - b.oath_year;
+                    }
+              return a.name.localeCompare(b.name);}
+            ),
           associates: data
             .filter(m => m.category === 'associate')
             .sort((a, b) => {if (a.oath_year !== b.oath_year) {
-                return b.oath_year - a.oath_year;
+                return a.oath_year - b.oath_year;
                     }
               return a.name.localeCompare(b.name);}
             ),
@@ -77,7 +80,9 @@ const Employees = () => {
                 activeTab === 'partners'
                   ? 'bg-main text-white shadow-lg shadow-blue-200 hover:bg-main'
                   : 'text-ctext hover:text-gray-900'
+                
               }`}
+              id="partner-button"
             >
               Partners & Of Counsel
             </Button>
@@ -88,6 +93,7 @@ const Employees = () => {
                   ? 'bg-main text-white shadow-lg shadow-blue-200 hover:bg-main'
                   : 'text-ctext hover:text-gray-900'
               }`}
+              id='associate'
             >
               Associates
             </Button>
@@ -98,6 +104,7 @@ const Employees = () => {
                   ? 'bg-main text-white shadow-lg shadow-blue-200 hover:bg-main'
                   : 'text-ctext hover:text-gray-900'
               }`}
+              id="management"
             >
               Management
             </Button>
@@ -108,6 +115,7 @@ const Employees = () => {
                   ? 'bg-main text-white shadow-lg shadow-blue-200 hover:bg-main'
                   : 'text-ctext hover:text-gray-900'
               }`}
+              id='trainee'
             >
               Trainees
             </Button>
@@ -149,24 +157,24 @@ const Employees = () => {
                         unoptimized 
                         />
                          ) : (
-                         <div className="text-white font-bold text-4xl ">
+                         <div className="text-white font-bold capitalize text-4xl ">
                           {getInitials(section.name)}
                         </div>
     )}
                       </div>
 
                       {/* Title */}
-                      <h3 className={`text-2xl font-bold mb-4 text-ctext transition-colors duration-300 min-h-16 flex items-center`}>
+                      <h3 className={`text-2xl font-bold mb-4 text-ctext transition-colors capitalize duration-300 min-h-16 flex items-center`}>
                         {section.name}
                       </h3>
 
                       {/* Subtitle */}
-                      <h4 className="text-lg font-semibold text-main mb-4 min-h-10 flex items-center">
+                      <h4 className="text-lg font-semibold text-main mb-4 min-h-10 flex capitalize items-center">
                         {section.role}
                       </h4>
 
                       {/* Details */}
-                      <p className="text-ctext leading-relaxed mb-6 grow">
+                      <p className="text-ctext leading-relaxed mb-6 grow capitalize">
                         {section.department}
                       </p>
                     </div>

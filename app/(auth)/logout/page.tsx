@@ -1,13 +1,19 @@
-'use client';
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+// app/logout/page.tsx
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
 
-const LogoutPage =  () => {
-    const router = useRouter();
-    useEffect(() => {
-        setTimeout(()=> router.push("/"), 2000);
-    }, []);
-  return <div>You have logged out... redirecting in a sec.</div>;
-};
 
-export default LogoutPage;
+export default async function LogoutPage() {
+  try {
+    const supabase = await createClient();
+    
+    // ✅ Server-side logout
+    await supabase.auth.signOut();
+    
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+  
+  // ✅ Always redirect even if error
+  redirect("/login");
+}

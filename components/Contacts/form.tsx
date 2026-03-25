@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -38,7 +38,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-function ContactForm() {
+function ContactFormContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const searchParams = useSearchParams();
 
@@ -89,7 +89,7 @@ function ContactForm() {
   };
 
   return (
-    <div>
+    <div className=" px-4 sm:px-6 lg:px-8">
       <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -232,6 +232,33 @@ function ContactForm() {
         </Form>
       </div>
     </div>
+  );
+}
+
+function ContactForm() {
+  return (
+    <Suspense 
+      fallback={
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12 animate-pulse">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="h-12 bg-gray-200 rounded-lg" />
+                <div className="h-12 bg-gray-200 rounded-lg" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="h-12 bg-gray-200 rounded-lg" />
+                <div className="h-12 bg-gray-200 rounded-lg" />
+              </div>
+              <div className="h-48 bg-gray-200 rounded-lg" />
+              <div className="h-12 bg-gray-200 rounded-lg" />
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ContactFormContent />
+    </Suspense>
   );
 }
 

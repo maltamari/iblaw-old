@@ -21,7 +21,7 @@ export default function Home() {
     <HeroSection 
     text={"Navigating legal complexities with clarity and precision."} 
     image={"/homeHero.png"}
-    textClass="px-4 lg:w-220 text-6xl"
+    textClass="lg:w-220 text-6xl"
     />
     <BarSection/>
     <AboutSection/>

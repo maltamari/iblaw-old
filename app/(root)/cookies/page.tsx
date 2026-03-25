@@ -1,11 +1,13 @@
 import HeroSection from '@/components/Global/hero'
 import type { Metadata } from "next";
+
 export const metadata: Metadata = {
   title: "Cookie Policy",
   description:
-    "Read IBLaw’s cookie policy and learn how we use cookies to improve user experience and website performance.",
+    "Read IBLaw's cookie policy and learn how we use cookies to improve user experience and website performance.",
 };
-function page() {
+
+function CookiePolicyPage() {
   return (
     <> 
       <HeroSection
@@ -17,7 +19,7 @@ function page() {
       />
 
       <div className="min-h-screen w-full">
-        <div className="max-w-5xl mx-auto px-6 py-12">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12">
 
           {/* Last Updated */}
           <p className="text-ctext text-sm mb-8 pb-8 border-b border-ctext">
@@ -178,7 +180,7 @@ function page() {
               Changes to This Policy
             </h2>
             <p className="text-ctext leading-relaxed">
-              We may update our Cookies Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the "Last Updated" date. We recommend that you review this policy periodically for any changes.
+              We may update our Cookies Policy from time to time. We will notify you of any changes by posting the new policy on this page and updating the &quot;Last Updated&quot; date. We recommend that you review this policy periodically for any changes.
             </p>
           </section>
 
@@ -212,4 +214,4 @@ function page() {
   )
 }
 
-export default page
+export default CookiePolicyPage

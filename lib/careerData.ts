@@ -8,11 +8,12 @@ interface Section {
 }
 
 export const positions = [
-  "Associate Attorney",
-  "Intellectual Property Associate",
-  "Litigation Associate",
-  "Trainee Attorney",
-  "Other",
+  "",
+  "Associate (Corporate & Commercial)",
+  "Associate (Dispute Resolution)",
+  "Associate (Intellectual Property)",
+  "Trainee",
+  "Internship",
 ];
 export const lifeAtIBLAW = [
   {
